@@ -1,0 +1,2 @@
+touch test.input
+g++ test.cpp -std=c++17 -lgtest -lgtest_main -pthread -o test.out && ./test.out rm test.out test.input

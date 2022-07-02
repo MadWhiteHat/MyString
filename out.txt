@@ -1,0 +1,2 @@
+g++ --shared -Wall -Wextra -Werror --std=c++17 -o lib/libstring.so lib/my_string.o lib/search_trie.o
+g++ --verbose -Llib/ -Wall -Wextra -Werror -o my_string --std=c++17 src/main.cc -llibstring
