@@ -73,6 +73,7 @@ def PythonSysPath( **kwargs ):
 
 def Settings( **kwargs):
     return {
-        'flags' : [ '-x', 'c++', '-Wall', '-Wextra', '-Werror', '-pedantic',
-               '-std=c++17' ]
+        'flags' : [ 
+                    '-x', 'c++', '-Wall', '-Wextra', '-Werror', '-pedantic',
+                    '-std=c++17', '-Iexternal/googletest/googletest/include' ]
     }

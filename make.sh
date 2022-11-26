@@ -2,5 +2,3 @@
 
 mkdir -p out/build &> /dev/null
 cmake -S .  -B out/build
-cmake --build out/build 
-ln -s out/build/MyString MyString &>/dev/null
