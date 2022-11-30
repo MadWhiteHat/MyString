@@ -23,65 +23,65 @@ class _MyIterator {
   using reference = typename _TraitsType::reference;
   using iterator_category = typename _TraitsType::iterator_category;
 
-  constexpr _MyIterator() noexcept : _MyIterator(_Iterator()) {}
+  _MyIterator() noexcept : _MyIterator(_Iterator()) {}
 
-  constexpr explicit _MyIterator(const _Iterator& __it) noexcept
+  explicit _MyIterator(const _Iterator& __it) noexcept
     : _curr(__it) {}
 
   template <typename _Iter,
             typename = __custom_traits::_ConvertibleFrom<_Iter, _Iterator> >
-  constexpr _MyIterator(const _MyIterator<_Iter, _Container>& __it) noexcept
+  _MyIterator(const _MyIterator<_Iter, _Container>& __it) noexcept
     : _curr(__it.base()) {}
 
-  constexpr reference operator*() const noexcept {
+  reference operator*() const noexcept {
     return *_curr;
   }
 
-  constexpr pointer operator->() const noexcept{
+  pointer operator->() const noexcept{
     return _curr;
   }
 
-  constexpr _MyIterator& operator++() noexcept {
+  _MyIterator& operator++() noexcept {
     ++_curr;
     return *this;
   }
 
-  constexpr _MyIterator operator++(int) noexcept {
+  _MyIterator operator++(int) noexcept {
     return _MyIterator(_curr++);
   }
 
-  constexpr _MyIterator& operator--() noexcept {
+  _MyIterator& operator--() noexcept {
     --_curr;
     return *this;
   }
 
-  constexpr _MyIterator operator--(int) noexcept {
+  _MyIterator operator--(int) noexcept {
     return _MyIterator(_curr--);
   }
 
-  constexpr reference operator[](difference_type __pos) const noexcept {
+  reference operator[](difference_type __pos) const noexcept {
     return _curr[__pos];
   }
 
-  constexpr _MyIterator& operator+=(difference_type __n) noexcept {
+  _MyIterator& operator+=(difference_type __n) noexcept {
     _curr += __n;
     return *this;
   }
 
-  constexpr _MyIterator operator+(difference_type __n) const noexcept {
+  _MyIterator operator+(difference_type __n) const noexcept {
     return _MyIterator(_curr + __n);
   }
 
-  constexpr _MyIterator& operator-=(difference_type __n) noexcept {
+  _MyIterator& operator-=(difference_type __n) noexcept {
     _curr -= __n;
     return *this;
   }
 
-  constexpr _MyIterator operator-(difference_type __n) const noexcept {
+  _MyIterator operator-(difference_type __n) const noexcept {
     return _MyIterator(_curr - __n);
   }
 
-  constexpr const _Iterator& base() const noexcept {
+  const _Iterator& base() const noexcept {
     return _curr;
   }
 
@@ -90,136 +90,134 @@ class _MyIterator {
   _Iterator _curr;
 };
 
-} // namespace MyTypes
-
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline bool operator==(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept {
+inline bool
+operator==(const _MyIterator<_IteratorL, _Container>& __lhs,
+           const _MyIterator<_IteratorR, _Container>& __rhs) noexcept {
   return __lhs.base() == __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline bool operator==(
-  const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline bool
+operator==(const _MyIterator<_Iterator, _Container>& __lhs,
+           const _MyIterator<_Iterator, _Container>& __rhs) noexcept {
   return __lhs.base() == __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline bool operator!=(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept {
+inline bool
+operator!=(const _MyIterator<_IteratorL, _Container>& __lhs,
+           const _MyIterator<_IteratorR, _Container>& __rhs) noexcept {
   return __lhs.base() != __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline bool operator!=(
-  const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline bool
+operator!=(const _MyIterator<_Iterator, _Container>& __lhs,
+           const _MyIterator<_Iterator, _Container>& __rhs) noexcept {
   return __lhs.base() != __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline bool operator>(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept {
+inline bool
+operator>(const _MyIterator<_IteratorL, _Container>& __lhs,
+          const _MyIterator<_IteratorR, _Container>& __rhs) noexcept {
   return __lhs.base() > __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline bool operator>(
-  const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline bool
+operator>(const _MyIterator<_Iterator, _Container>& __lhs,
+          const _MyIterator<_Iterator, _Container>& __rhs) noexcept {
   return __lhs.base() > __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline bool operator<(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept {
+inline bool
+operator<(const _MyIterator<_IteratorL, _Container>& __lhs,
+          const _MyIterator<_IteratorR, _Container>& __rhs) noexcept {
   return __lhs.base() < __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline bool operator<(
-  const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline bool
+operator<(const _MyIterator<_Iterator, _Container>& __lhs,
+          const _MyIterator<_Iterator, _Container>& __rhs) noexcept {
   return __lhs.base() < __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline bool operator>=(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept {
+inline bool
+operator>=(const _MyIterator<_IteratorL, _Container>& __lhs,
+           const _MyIterator<_IteratorR, _Container>& __rhs) noexcept {
   return __lhs.base() >= __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline bool operator>=(
-  const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline bool
+operator>=(const _MyIterator<_Iterator, _Container>& __rhs,
+           const _MyIterator<_Iterator, _Container>& __lhs) noexcept {
   return __lhs.base() >= __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline bool operator<=(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept {
+inline bool
+operator<=(const _MyIterator<_IteratorL, _Container>& __lhs,
+           const _MyIterator<_IteratorR, _Container>& __rhs) noexcept {
   return __lhs.base() <= __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline bool operator<=(
-  const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline bool
+operator<=(const _MyIterator<_Iterator, _Container>& __lhs,
+           const _MyIterator<_Iterator, _Container>& __rhs) noexcept {
   return __lhs.base() <= __rhs.base();
 }
 
-template <typename _IteratorR, typename _IteratorL, typename _Container>
+template <typename _IteratorL, typename _IteratorR, typename _Container>
 [[nodiscard]]
-inline auto operator-(
-  const MyTypes::_MyIterator<_IteratorR, _Container>& __rhs,
-  const MyTypes::_MyIterator<_IteratorL, _Container>& __lhs) noexcept
-  -> decltype(__lhs.base() - __rhs.base()) {
+inline auto
+operator-(const _MyIterator<_IteratorL, _Container>& __lhs,
+          const _MyIterator<_IteratorR, _Container>& __rhs) noexcept
+    -> decltype(__lhs.base() - __rhs.base()) {
   return __lhs.base() - __rhs.base();
 }
 
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline typename MyTypes::_MyIterator<_Iterator, _Container>::difference_type
-operator-(const MyTypes::_MyIterator<_Iterator, _Container>& __rhs,
-          const MyTypes::_MyIterator<_Iterator, _Container>& __lhs) noexcept {
+inline typename _MyIterator<_Iterator, _Container>::difference_type
+operator-(const _MyIterator<_Iterator, _Container>& __lhs,
+          const _MyIterator<_Iterator, _Container>& __rhs) noexcept {
   return __lhs.base() - __rhs.base();
 }
 
+
 template <typename _Iterator, typename _Container>
 [[nodiscard]]
-inline MyTypes::_MyIterator<_Iterator, _Container>
+inline _MyIterator<_Iterator, _Container>
 operator+(
-  typename MyTypes::_MyIterator<_Iterator, _Container>::difference_type __n,
-  const MyTypes::_MyIterator<_Iterator, _Container>& __it) noexcept {
-  return MyTypes::_MyIterator<_Iterator, _Container>(__it.base() + __n);
+  typename _MyIterator<_Iterator, _Container>::difference_type __n,
+  const _MyIterator<_Iterator, _Container>& __it) noexcept {
+  return _MyIterator<_Iterator, _Container>(__it.base() + __n);
 }
 
-namespace MyTypes {
 
 template <typename _Iterator>
 class MyReverseIterator {
@@ -333,136 +331,139 @@ protected:
 };
 
 template <typename _Iterator>
-constexpr MyReverseIterator<_Iterator> MakeMyReverseIterator(_Iterator __it) {
+constexpr MyReverseIterator<_Iterator>
+MakeMyReverseIterator(_Iterator __it) {
   return MyReverseIterator<_Iterator>(__it);
 }
 
-} // namespace MyTypes
-
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr bool operator==(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs) {
+inline constexpr bool
+operator==(const MyReverseIterator<_IteratorL>& __lhs,
+           const MyReverseIterator<_IteratorR>& __rhs) {
   return __lhs.base() == __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr bool operator==(
-  const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-  const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr bool
+operator==(const MyReverseIterator<_Iterator>& __lhs,
+           const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() == __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr bool operator!=(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs) {
+inline constexpr bool
+operator!=(const MyReverseIterator<_IteratorL>& __lhs,
+           const MyReverseIterator<_IteratorR>& __rhs) {
   return __lhs.base() != __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr bool operator!=(
-  const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-  const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr bool
+operator!=(const MyReverseIterator<_Iterator>& __lhs,
+           const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() != __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr bool operator>(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs) {
+inline constexpr bool
+operator>(const MyReverseIterator<_IteratorL>& __lhs,
+          const MyReverseIterator<_IteratorR>& __rhs) {
   return __lhs.base() > __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr bool operator>(
-  const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-  const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr bool
+operator>(const MyReverseIterator<_Iterator>& __lhs,
+          const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() > __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr bool operator<(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs) {
+inline constexpr bool
+operator<(const MyReverseIterator<_IteratorL>& __lhs,
+          const MyReverseIterator<_IteratorR>& __rhs) {
   return __lhs.base() < __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr bool operator<(
-  const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-  const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr bool
+operator<(const MyReverseIterator<_Iterator>& __lhs,
+          const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() < __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr bool operator>=(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs) {
+inline constexpr bool
+operator>=(const MyReverseIterator<_IteratorL>& __lhs,
+           const MyReverseIterator<_IteratorR>& __rhs) {
   return __lhs.base() >= __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr bool operator>=(
-  const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-  const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr bool
+operator>=(const MyReverseIterator<_Iterator>& __lhs,
+           const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() >= __rhs.base();
 }
 
 
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr bool operator<=(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs) {
+inline constexpr bool
+operator<=(const MyReverseIterator<_IteratorL>& __lhs,
+           const MyReverseIterator<_IteratorR>& __rhs) {
   return __lhs.base() <= __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr bool operator<=(
-  const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-  const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr bool
+operator<=(const MyReverseIterator<_Iterator>& __lhs,
+           const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() <= __rhs.base();
 }
 
-template <typename _IteratorR, typename _IteratorL>
+template <typename _IteratorL, typename _IteratorR>
 [[nodiscard]]
-inline constexpr auto operator-(
-  const MyTypes::MyReverseIterator<_IteratorR>& __rhs,
-  const MyTypes::MyReverseIterator<_IteratorL>& __lhs)
+inline constexpr auto
+operator-(const MyReverseIterator<_IteratorL>& __lhs,
+          const MyReverseIterator<_IteratorR>& __rhs)
   -> decltype(__lhs.base() - __rhs.base()) {
   return __lhs.base() - __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr typename MyTypes::MyReverseIterator<_Iterator>::difference_type
-operator-(const MyTypes::MyReverseIterator<_Iterator>& __rhs,
-          const MyTypes::MyReverseIterator<_Iterator>& __lhs) {
+inline constexpr typename MyReverseIterator<_Iterator>::difference_type
+operator-(const MyReverseIterator<_Iterator>& __lhs,
+          const MyReverseIterator<_Iterator>& __rhs) {
   return __lhs.base() - __rhs.base();
 }
 
 template <typename _Iterator>
 [[nodiscard]]
-inline constexpr MyTypes::MyReverseIterator<_Iterator>
-operator+(typename MyTypes::MyReverseIterator<_Iterator>::difference_type __n,
-          const MyTypes::MyReverseIterator<_Iterator>& __it) {
-  return MyTypes::MyReverseIterator<_Iterator>(__it.base() + __n);
+inline constexpr MyReverseIterator<_Iterator>
+operator+(typename MyReverseIterator<_Iterator>::difference_type __n,
+          const MyReverseIterator<_Iterator>& __it) {
+  return MyReverseIterator<_Iterator>(__it.base() + __n);
 }
+
+} //namespace MyTypes
+
+
 
 #endif // _MY_ITERATOR_H

@@ -37,9 +37,9 @@
 //------------------------------------None------------------------------------//
 
 // 5. Your project's .h files.
-#include "custom_traits.h"
-#include "my_exception.h"
 #include "my_iterator.h"
+#include "my_exception.h"
+#include "custom_traits.h"
 #include "search_trie.h"
 
 // Variables: lowerCamelCase
@@ -65,6 +65,8 @@ class MyBasicString {
 
   static_assert(LOCAL_CAPACITY % 4 == 0,
                 "LOCAL_CAPACITY must be divisible by 4");
+
+  static_assert(std::is_same_v<_CharT, typename _Traits::char_type>);
 
   using _AllocatorTraits = std::allocator_traits<_Alloc>;
 
@@ -131,12 +133,12 @@ class MyBasicString {
                 const _Alloc& __alloc);
   _CXX20_CONSTEXPR
   MyBasicString(const MyBasicString& __other,
-                const _Alloc& __alloc = _Alloc());
+                const _Alloc& __alloc);
   _CXX20_CONSTEXPR
   MyBasicString(MyBasicString&& __other) noexcept;
   _CXX20_CONSTEXPR
   MyBasicString(MyBasicString&& __other, const _Alloc& __alloc)
-  noexcept(_AllocatorTraits::is_always_equal);
+  noexcept(_AllocatorTraits::is_always_equal::value);
   _CXX20_CONSTEXPR
   MyBasicString(std::initializer_list<value_type> __ilist,
                 const _Alloc& __alloc = _Alloc());
@@ -664,10 +666,11 @@ class MyBasicString {
   template <typename _ForwardIter>
   void _Construct(_ForwardIter __beg, _ForwardIter __end,
                   std::forward_iterator_tag) {
-    size_type __dnew = static_cast<size_type>(std::distance(__beg, __end)) + 1;
+    size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
     if (__dnew > size_type(_localCapacity)) {
-      this->_Data(this->_Create(__dnew, size_type(0)));
-      this->_Capacity(__dnew);
+      size_type __reqCap = __dnew + 1;
+      this->_Data(this->_Create(__reqCap, size_type(0)));
+      this->_Capacity(__reqCap);
     } else {
       this->_Data(this->_LocalData());
     }
@@ -678,7 +681,7 @@ class MyBasicString {
 
       MyBasicString* _guarded;
     } __guard(this);
-    this->_CopyChars(_Data(), __beg, __end);
+    this->_CopyChars(this->_Data(), __beg, __end);
 
     __guard._guarded = nullptr;
     this->_SetLength(__dnew);
@@ -686,14 +689,15 @@ class MyBasicString {
 
   void _Construct(size_type __count, value_type __ch) {
     if (__count >= size_type(_localCapacity)) {
-      this->_Data(this->_Create(++__count, size_type(0)));
-      this->_Capacity(__count);
+      size_type __reqCap = __count + 1;
+      this->_Data(this->_Create(__reqCap, size_type(0)));
+      this->_Capacity(__reqCap);
     } else {
       if (__count) {
         this->_Assign(_Data(), __count, __ch);
       }
     }
-    this->_SetLength(this->capacity());
+    this->_SetLength(__count);
   }
 
   pointer _Create(size_type& __cap, size_type __oldCapacity) {
@@ -702,9 +706,9 @@ class MyBasicString {
     }
     if (__cap > __oldCapacity && __cap < 2 * __oldCapacity) {
       __cap = 2 * __oldCapacity;
-    }
-    if (__cap > this->max_size()) {
-      __cap = this->max_size();
+      if (__cap > this->max_size()) {
+        __cap = this->max_size();
+      }
     }
     return _AllocatorTraits::allocate(this->_GetAllocator(), __cap);
   }
@@ -730,13 +734,13 @@ class MyBasicString {
 
   template<typename _BasicCharT, typename _BasicTraits, typename _BasicAlloc>
   static size_type _Check(
-    std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
+    const std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
     size_type __pos, const char* __methodName) {
     if (__pos > __other.length()) {
       __ThrowMyExceptionFmt<MyOutOfRange>(
         ("Out of range in %s: __pos (which is %zu) > __other.length()" 
          " [decltype(__other) = basic_string] (which is %zu)"),
-        __methodName, __pos, __other->length());
+        __methodName, __pos, __other.length());
     }
     return __pos;
   }
@@ -805,7 +809,7 @@ class MyBasicString {
 
   template <typename _InputIter,
             typename = __custom_traits::_RequireInputIter<_InputIter> >
-  MyBasicString& __Replace(const_iterator __beg1, const_iterator __end1,
+  MyBasicString& _Replace(const_iterator __beg1, const_iterator __end1,
     _InputIter __beg2, _InputIter __end2) {
     const MyBasicString __str(__beg2, __end2, this->_GetAllocator());
     const size_type __count = __end1 - __beg1;
@@ -881,10 +885,10 @@ class MyBasicString {
 
   template<typename _BasicCharT, typename _BasicTraits, typename _BasicAlloc>
   static size_type _Limit(
-    std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
+    const std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
     size_type __pos, size_type __offset) noexcept{
-    const bool __testoff = __offset < __other->length() - __pos;
-    return __testoff ? __offset : __other->length() - __pos;
+    const bool __testoff = __offset < __other.length() - __pos;
+    return __testoff ? __offset : __other.length() - __pos;
   }
 
   static void _Copy(pointer __dest, const_pointer __src, size_type __count) {
@@ -900,6 +904,11 @@ class MyBasicString {
   static void _Assign(pointer __dest, const_pointer __src, size_type __count) {
     if (__count == 1) { traits_type::assign(*__dest, *__src); }
     else { traits_type::assign(__dest, __src, __count); }
+  }
+
+  static void _Assign(pointer __dest, size_type __count, value_type __ch) {
+    if (__count == 1) { traits_type::assign(*__dest, __ch); }
+    else { traits_type::assign(__dest, __count, __ch); }
   }
 
   template <typename _Iter>
@@ -1039,21 +1048,24 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(const_pointer __cStr, size_type __count, const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
-
-  if (__cStr == nullptr && __count > 0) {
-    __ThrowMyExceptionFmt<MyLogicError>(
-      "MyBasicString: construction from nullptr is not valid");
+  if (__count > 0) {
+    if (__cStr != nullptr) {
+     this->_Construct(__cStr,
+      __cStr +  std::min(__count, traits_type::length(__cStr)),
+      std::forward_iterator_tag());     
+    } else {
+       __ThrowMyExceptionFmt<MyLogicError>(
+          "MyBasicString: construction from nullptr is not valid"); 
+    }
   }
-  this->_Construct(__cStr,
-    __cStr +  std::min(__count, traits_type::length(__cStr)),
-    std::forward_iterator_tag());
 }
 
+// Allow throw if __cStr is nullptr
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(const_pointer __cStr, const _Alloc& __alloc)
-  : MyBasicString(__cStr, traits_type::length(__cStr), __alloc) {}
+  : MyBasicString(__cStr, __cStr ? traits_type::length(__cStr) : 1, __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 template <typename _InputIter, typename>
@@ -1062,7 +1074,7 @@ MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(_InputIter __first, _InputIter __last, const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
   this->_Construct(__first, __last,
-    std::iterator_traits<_InputIter>::iterator_category());
+    typename std::iterator_traits<_InputIter>::iterator_category());
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1112,14 +1124,14 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(MyBasicString&& __other, const _Alloc& __alloc)
-noexcept(_AllocatorTraits::is_always_equal)
+noexcept(_AllocatorTraits::is_always_equal::value)
     : _dataPlus(this->_LocalData(), __alloc) {
 
   if (__other._IsLocal()) {
     traits_type::copy(_localData, __other._localData, __other.length() + 1);
     this->_Length(__other.length());
     __other._SetLength(0);
-  } else if (_AllocatorTraits::is_always_equal() ||
+  } else if (_AllocatorTraits::is_always_equal::value ||
     __alloc == __other._GetAllocator()) {
     this->_Data(__other._Data());
     this->_Length(__other.length());

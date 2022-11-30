@@ -72,10 +72,15 @@ template <typename _Alloc>
 using _RequireAllocator = std::enable_if_t<
                             _IsAllocator<_Alloc>::value, _Alloc>;
 
+template<typename _InputIter>
+using _IterCategoryT = typename std::iterator_traits<
+  _InputIter>::iterator_category;
+
 template <typename _InputIter>
 using _RequireInputIter = std::enable_if_t<
                             std::is_convertible_v<
-                              _InputIter, std::input_iterator_tag> >;
+                             _IterCategoryT<_InputIter>,
+                             std::input_iterator_tag> >;
 
 template <typename _From, typename _To>
 using _ConvertibleFrom = std::enable_if_t< std::is_convertible_v<_From, _To> >;
