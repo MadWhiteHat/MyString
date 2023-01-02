@@ -1,11 +1,11 @@
+#ifndef _TESTS_UTILS_H
+#define _TESTS_UTILS_H
+
 #include <iostream>
-#include <iterator>
-#include <limits>
 #include <algorithm>
 #include <string>
 #include <gtest/gtest.h>
 
-#include "custom_traits.h"
 #include "my_string.h"
 
 namespace TestingHelper {
@@ -47,20 +47,18 @@ class TestingBase : public testing::Test {
       MyTypes::MyBasicString<_CharT, _Traits, _Alloc>
     >
   >;
-  const typename MyTestingString::size_type _localBufferThreshold = 
+  const typename MyTestingString::size_type _localBufferCapThreshold = 
     LOCAL_CAPACITY / sizeof(typename MyTestingString::value_type);
+  const typename MyTestingString::size_type _localBufferLenThreshold =
+    _localBufferCapThreshold - 1;
+
+  inline void LengthTest(const _CharT* __cStr) {
+    ASSERT_GT(std::char_traits<_CharT>::length(__cStr),
+     _localBufferLenThreshold);
+  }
 };
 
-int _CompareHelper(size_t __count1, size_t __count2) {
-  using __limits = std::numeric_limits<int>;
-  const std::ptrdiff_t __diff = __count1 - __count2;
-  if (__diff > __limits::max()) {
-    return __limits::max();
-  } else if (__diff < __limits::min()) {
-    return __limits::min();
-  }
-  return static_cast<int>(__diff);
-}
+int _CompareHelper(size_t __count1, size_t __count2);
 
 template <typename _CharT>
 int CustomStrCmp(const _CharT* __cStr1, const size_t __len1,
@@ -74,5 +72,6 @@ int CustomStrCmp(const _CharT* __cStr1, const size_t __len1,
   }
   return __res;
 }
-
 } // namespace TesingHelper
+
+#endif // _TESTS_UTILS_H

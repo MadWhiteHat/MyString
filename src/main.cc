@@ -22,11 +22,7 @@
 // Custom function names: UpperCamelCasd
 
 int main(const int32_t, const char**) {
-  std::string ms("hello worlod");
-  std::vector<std::string> vs;
-  vs.emplace_back("lo");
-  MyTypes::PatternSearcher<std::string> pat(vs);
-  auto res = pat(ms);
-  std::cout << res.size();
-  return 0;
+  MyTypes::MyString ms("hello worlod");
+  ms.assign(20, 'a');
+  std::cout << ms.data() << ' ' << ms.length() <<  '/' << ms.capacity() << std::endl;
 }

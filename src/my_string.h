@@ -692,10 +692,9 @@ class MyBasicString {
       size_type __reqCap = __count + 1;
       this->_Data(this->_Create(__reqCap, size_type(0)));
       this->_Capacity(__reqCap);
-    } else {
-      if (__count) {
-        this->_Assign(_Data(), __count, __ch);
-      }
+    } 
+    if (__count) {
+      this->_Assign(_Data(), __count, __ch);
     }
     this->_SetLength(__count);
   }
@@ -720,6 +719,26 @@ class MyBasicString {
   inline allocator_type& _GetAllocator() noexcept { return _dataPlus; }
   inline const allocator_type& _GetAllocator() const noexcept {
     return _dataPlus;
+  }
+
+  void _Assign(const MyBasicString& __other) {
+    if (this == std::addressof(__other)) { return; }
+    const size_type __reqLength = __other.length();
+    const size_type __reqCap = __reqLength + 1;
+    const size_type __cap = this->capacity();
+
+    if (__reqCap > __cap) {
+      size_type __newCap = __reqCap;
+      pointer __tmp = this->_Create(__newCap, __cap);
+      this->_Dispose();
+      this->_Data(__tmp);
+      this->_Capacity(__newCap);
+    }
+
+    if (__other.length()) {
+      this->_Copy(this->_Data(), __other._Data(), __other.length());
+    }
+    this->_SetLength(__other.length());
   }
 
   size_type _Check(size_type __pos, const char* __methodName) const {
@@ -765,7 +784,7 @@ class MyBasicString {
                size_type __len2) {
     const size_type __count = this->length() - __pos - __len1;
 
-    size_type __newCap = this->length() + __len2 - __len1;
+    size_type __newCap = this->length() + __len2 - __len1 + 1;
     pointer __another = _Create(__newCap, this->capacity());
 
     if (__pos) {
@@ -786,7 +805,7 @@ class MyBasicString {
   MyBasicString& _ReplaceAux(size_type __pos1, size_type __count1,
                              size_type __count2, value_type __ch) {
     this->_CheckLength(__count1, __count2, "MyBasicString::_ReplaceAux");
-
+  
     const size_type __oldLen = this->length();
     const size_type __newLen = __oldLen + __count2 - __count1;
 
@@ -803,7 +822,7 @@ class MyBasicString {
     if (__count2) {
       this->_Assign(this->_Data() + __pos1, __count2, __ch);
     }
-    this->_SetLength(__newLen + 1);
+    this->_SetLength(__newLen);
     return *this;
   }
 
@@ -1167,7 +1186,7 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 operator=(const MyBasicString& __other) {
-  return *this->assign(__other);
+  return this->assign(__other);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1175,7 +1194,7 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 operator=(const std::basic_string<value_type>& __other) {
-  return *this->assign(__other);
+  return this->assign(__other);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1185,12 +1204,15 @@ MyBasicString<_CharT, _Traits, _Alloc>::
 operator=(MyBasicString&& __other)
 noexcept(_AllocatorTraits::propagate_on_container_move_assignment::value
          || _AllocatorTraits::is_always_equal::value) {
+
+  if (this == std::addressof(__other)) { return *this; }
+
   if (!this->_IsLocal()
       && !_AllocatorTraits::propagate_on_container_move_assignment::value
       && !_AllocatorTraits::is_always_equal::value
       && this->_GetAllocator() != __other._GetAllocator()) {
     this->_Destroy(_allocatedCapacity);
-    this->_Data(_LocalData());
+    this->_Data(this->_LocalData());
     this->_Length(0);
   }
 
@@ -1199,16 +1221,20 @@ noexcept(_AllocatorTraits::propagate_on_container_move_assignment::value
     __other._GetAllocator());
 
   if (__other._IsLocal()) {
-    if (this == std::addressof(__other)) { return *this; }
+    if (!this->_IsLocal()) {
+      this->_Destroy(_allocatedCapacity);
+      this->_Data(this->_LocalData());
+    }
+
     if (__other.length()) {
       this->_Copy(this->_Data(), __other._Data(), __other.length());
-      this->_SetLength(__other.length());
     }
-  } else if (_AllocatorTraits::propagate_on_container_move_assignment::value 
-           || _AllocatorTraits::is_always_equal::value
-           || this->_GetAllocator() == __other._GetAllocator()) {
+    this->_SetLength(__other.length());
+  } else if (_AllocatorTraits::propagate_on_container_move_assignment::value ||
+             _AllocatorTraits::is_always_equal::value ||
+             this->_GetAllocator() == __other._GetAllocator()) {
     pointer __data = nullptr;
-    size_type __capacity;
+    size_type __capacity = _localCapacity;
     if (!this->_IsLocal()) {
       // Can be freed by __other
       if (_AllocatorTraits::is_always_equal::value) {
@@ -1229,6 +1255,10 @@ noexcept(_AllocatorTraits::propagate_on_container_move_assignment::value
     }
   } else {
     this->assign(__other);
+  }
+  if(!__other._IsLocal()) {
+    __other._Destroy(__other._allocatedCapacity);
+    __other._Data(__other._LocalData());
   }
   __other.clear();
   return *this;
@@ -1265,7 +1295,7 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 assign(size_type __count, value_type __ch) {
-  return _ReplaceAux(size_type(0), this->length(), __count, __ch);
+ return _ReplaceAux(size_type(0), this->length(), __count, __ch);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1283,8 +1313,8 @@ assign(const MyBasicString& __other) {
         this->_SetLength(0);
       } else {
         const size_type __len = __other.length();
-        pointer __another = _AllocatorTraits::allocate(__other._GetAllocator(),
-          __len + 1);
+        auto __alloc = __other._GetAllocator();
+        pointer __another = _AllocatorTraits::allocate(__alloc, __len + 1);
         this->_Destroy(_allocatedCapacity);
         this->_Data(__another);
         this->_Capacity(__len + 1);
@@ -1303,7 +1333,7 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 assign(const std::basic_string<value_type>& __other) {
-  return this->_Replace(size_type(0), __other.length(), __other.data(), 
+  return this->_Replace(size_type(0), this->length(), __other.data(), 
     _Limit(__other, size_type(0), npos));
 }
 
@@ -1312,8 +1342,9 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 assign(const MyBasicString& __other, size_type __pos, size_type __count) {
-  return this->_Replace(size_type(0), __other.length(), __other._Data() +  
-    this->_Check(__pos, "MyBasicString::assign"), this->_Limit(__pos, __count));
+  return this->_Replace(size_type(0), this->length(), __other._Data() +  
+    __other._Check(__pos, "MyBasicString::assign"),
+    __other._Limit(__pos, __count));
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1322,7 +1353,7 @@ MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 assign(const std::basic_string<value_type>& __other,
                       size_type __pos, size_type __count) {
-  return this->_Replace(size_type(0), __other.length(), __other.data() +  
+  return this->_Replace(size_type(0), this->length(), __other.data() +  
     this->_Check(__other, __pos, "MyBasicString::assign"),
     this->_Limit(__other, __pos, __count));
 }
@@ -1377,7 +1408,7 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::allocator_type
 MyBasicString<_CharT, _Traits, _Alloc>::
 get_allocator() const noexcept {
-  return _GetAllocator();
+  return this->_GetAllocator();
 }
 
 //-------------------------------Element access-------------------------------//
@@ -1447,14 +1478,14 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::pointer
 MyBasicString<_CharT, _Traits, _Alloc>::
 data() noexcept {
-  return _Data();
+  return this->_Data();
 }
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_pointer
 MyBasicString<_CharT, _Traits, _Alloc>::
 data() const noexcept {
-  return _Data();
+  return this->_Data();
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1462,14 +1493,14 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::pointer
 MyBasicString<_CharT, _Traits, _Alloc>::
 c_str() noexcept {
-  return _Data();
+  return this->_Data();
 }
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_pointer
 MyBasicString<_CharT, _Traits, _Alloc>::
 c_str() const noexcept {
-  return _Data();
+  return this->_Data();
 }
 
 //---------------------------------Iterators----------------------------------//
@@ -1589,10 +1620,10 @@ reserve(size_type __newCap) {
 
   pointer __another = _Create(__newCap, __capacity);
   this->_Copy(__another, _Data(), this->length() + 1);
-  _Dispose();
-  _Data(__another);
-  _Capacity(__newCap);
-  _SetLength(this->length());
+  this->_Dispose();
+  this->_Data(__another);
+  this->_Capacity(__newCap);
+  this->_SetLength(this->length());
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1601,7 +1632,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 #endif
 void
 MyBasicString<_CharT, _Traits, _Alloc>::
-reserve() { shrink_to_fit(); }
+reserve() { this->shrink_to_fit(); }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR

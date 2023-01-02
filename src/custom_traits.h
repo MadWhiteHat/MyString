@@ -30,7 +30,7 @@ template <typename _CharT>
 inline constexpr bool _StringValidTypeV = _StringValidType<_CharT>::value;
 
 template <typename _Alloc>
-constexpr inline void _alloc_on_copy(_Alloc& __first, _Alloc& __second) {
+constexpr inline void _alloc_on_copy(_Alloc& __first, const _Alloc& __second) {
   using __traits = std::allocator_traits<_Alloc>;
   using __pocca =  typename __traits::propagate_on_container_copy_assignment;
 
