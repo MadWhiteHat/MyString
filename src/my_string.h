@@ -742,7 +742,7 @@ class MyBasicString {
   }
 
   size_type _Check(size_type __pos, const char* __methodName) const {
-    if (__pos > this->length()) {
+    if (__pos >= this->length()) {
       __ThrowMyExceptionFmt<MyOutOfRange>(
         ("Out of range in %s: __pos (which is %zu) > "
          " this->length() (which is %zu)"),
@@ -755,7 +755,7 @@ class MyBasicString {
   static size_type _Check(
     const std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
     size_type __pos, const char* __methodName) {
-    if (__pos > __other.length()) {
+    if (__pos >= __other.length()) {
       __ThrowMyExceptionFmt<MyOutOfRange>(
         ("Out of range in %s: __pos (which is %zu) > __other.length()" 
          " [decltype(__other) = basic_string] (which is %zu)"),
@@ -1418,14 +1418,14 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::reference
 MyBasicString<_CharT, _Traits, _Alloc>::
 at(size_type __pos) {
-  return this->_Data() + this->_Check(__pos, "MyBasicString::at");
+  return this->_Data()[this->_Check(__pos, "MyBasicString::at")];
 }
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_reference
 MyBasicString<_CharT, _Traits, _Alloc>::
 at(size_type __pos) const {
-  return this->_Data() + this->_Check(__pos, "MyBasicString::at");
+  return this->_Data()[this->_Check(__pos, "MyBasicString::at")];
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1449,14 +1449,14 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::reference
 MyBasicString<_CharT, _Traits, _Alloc>::
 front() noexcept {
-  return this->_Data[0];
+  return this->_Data()[0];
 }
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_reference
 MyBasicString<_CharT, _Traits, _Alloc>::
 front() const noexcept {
-  return this->_Data[0];
+  return this->_Data()[0];
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1538,7 +1538,7 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_iterator
 MyBasicString<_CharT, _Traits, _Alloc>::
 cend() const noexcept {
-  return cosnt_iterator(this->_Data() + this->length());
+  return const_iterator(this->_Data() + this->length());
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1550,7 +1550,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_reverse_iterator
 MyBasicString<_CharT, _Traits, _Alloc>::
-rbegin() const noexcept { this->crbegin(); }
+rbegin() const noexcept { return this->crbegin(); }
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_reverse_iterator

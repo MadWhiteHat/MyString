@@ -8,10 +8,27 @@
 
 #include "my_string.h"
 
+#define EXPECT_STREQ_CUSTOM(__cStr1, __cStr1Len, __cStr2, __cStr2Len) \
+  TestingHelper::_CustomStrEq(__cStr1, __cStr1Len, __cStr2, __cStr2Len)
+
+#define ADJUST_POS_LOCAL(__str, __pos) \
+  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::LOCAL)
+
+#define ADJUST_POS_DYNAMIC(__str, __pos) \
+  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::DYNAMIC)
+
+#define ADJUST_POS_COUNT_LOCAL(__str, __pos, __count) \
+  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::LOCAL)
+
+#define ADJUST_POS_COUNT_DYNAMIC(__str, __pos, __count) \
+  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::DYNAMIC)
+
 namespace TestingHelper {
 
+enum Adjustment { LOCAL, DYNAMIC };
+
 template <typename _Tuple>
-class TestingBase : public testing::Test {
+class StringTestingBase : public ::testing::Test {
  private:
   static_assert(std::tuple_size_v<_Tuple> < size_t(4) &&
     std::tuple_size_v<_Tuple> > size_t(0),
@@ -37,7 +54,7 @@ class TestingBase : public testing::Test {
   using _Alloc = _TupleHelperT<2,
     std::greater_equal<size_t>()(std::tuple_size_v<_Tuple>, 3)>;
 
- public:
+ protected:
 // Instantiation different string type depending on provided tuple 
   using MyTestingString = std::conditional_t<
     std::is_same_v<_Traits, void>,
@@ -47,21 +64,49 @@ class TestingBase : public testing::Test {
       MyTypes::MyBasicString<_CharT, _Traits, _Alloc>
     >
   >;
-  const typename MyTestingString::size_type _localBufferCapThreshold = 
-    LOCAL_CAPACITY / sizeof(typename MyTestingString::value_type);
-  const typename MyTestingString::size_type _localBufferLenThreshold =
-    _localBufferCapThreshold - 1;
+  
+  using value_type = typename MyTestingString::value_type;
+  using allocator_type = typename MyTestingString::allocator_type;
+  using size_type = typename MyTestingString::size_type;
 
-  inline void LengthTest(const _CharT* __cStr) {
-    ASSERT_GT(std::char_traits<_CharT>::length(__cStr),
-     _localBufferLenThreshold);
+  const size_type _localBufferCapThreshold =  LOCAL_CAPACITY /
+    sizeof(typename MyTestingString::value_type);
+  const size_type _localBufferLenThreshold =  _localBufferCapThreshold - 1;
+
+  const std::initializer_list<value_type> _str1 = 
+    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
+     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
+  const std::initializer_list<value_type> _str2 =
+    {'T', 'h', 'e', ' ', 'h', 'o', 'u', 's', 'e', ' ', 'o', 'f', ' ', 't', 'h',
+     'e', ' ', 'r', 'i', 's', 'i','n', 'g', ' ', 's', 'u', 'n', '\0' };
+
+  void SetUp() override {
+    ASSERT_GT(_str1.size(), _localBufferCapThreshold);
+    ASSERT_GT(_str2.size(), _localBufferCapThreshold);
+  }
+
+  void _AdjustDispatch(const std::basic_string<value_type> __str,
+    size_type& __pos, ::TestingHelper::Adjustment __adjust) {
+    switch(__adjust) {
+      case ::TestingHelper::LOCAL: {
+        if (__pos > __str.length() ) { __pos = 0; }
+        if (__pos + _localBufferLenThreshold < __str.length()) {
+          __pos = 
+        }
+        break;
+      }
+      case ::TestingHelper::DYNAMIC: {
+        if (__pos > __str.length() )
+        break;
+      } 
+    }
   }
 };
 
 int _CompareHelper(size_t __count1, size_t __count2);
 
 template <typename _CharT>
-int CustomStrCmp(const _CharT* __cStr1, const size_t __len1,
+int _CustomStrCmp(const _CharT* __cStr1, const size_t __len1,
   const _CharT* __cStr2, const size_t __len2) {
   const size_t __minLength = std::min(__len1, __len2);
 
@@ -72,6 +117,15 @@ int CustomStrCmp(const _CharT* __cStr1, const size_t __len1,
   }
   return __res;
 }
+
+template <typename _CharT>
+::testing::AssertionResult _CustomStrEq(const _CharT* __cStr1,
+    const size_t __len1, const _CharT* __cStr2, const size_t __len2) {
+  return (_CustomStrCmp(__cStr1, __len1, __cStr2, __len2) == 0) ?
+    ::testing::AssertionSuccess() : ::testing::AssertionFailure();
+}
+
+
 } // namespace TesingHelper
 
 #endif // _TESTS_UTILS_H

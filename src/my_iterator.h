@@ -235,9 +235,9 @@ protected:
 
   constexpr MyReverseIterator()
     noexcept(std::is_nothrow_default_constructible_v<iterator_type>)
-    : _curr(iterator_type()) {}
+    : _curr() {}
 
-  constexpr explicit MyReverseIterator(iterator_type __it)
+  explicit constexpr MyReverseIterator(iterator_type __it)
     noexcept(std::is_nothrow_copy_constructible_v<iterator_type>)
     : _curr(__it) {}
 
@@ -269,7 +269,9 @@ protected:
 
   [[nodiscard]]
   constexpr pointer operator->() const {
-    return std::addressof(operator*());
+    _Iterator __tmp = _curr;
+    --__tmp;
+    return _ToPointer(__tmp);
   }
 
   [[nodiscard]]
@@ -283,7 +285,7 @@ protected:
   }
 
   constexpr MyReverseIterator operator++(int) {
-    MyReverseIterator __tmp;
+    MyReverseIterator __tmp = *this;
     --_curr;
     return __tmp;
   }
@@ -328,6 +330,16 @@ protected:
  protected:
 
   _Iterator _curr;
+
+ private:
+  template <typename _Tp>
+  static constexpr _Tp* _ToPointer(_Tp* __t) {
+    return __t;
+  }
+  template <typename _Tp>
+  static constexpr _Tp* _ToPointer(_Tp __t) {
+    return __t.operator->();
+  }
 };
 
 template <typename _Iterator>
