@@ -64,9 +64,9 @@ target_link_libraries(test_utils
 
 add_executable(unittests EXCLUDE_FROM_ALL
   ${SOURCE_DIR}/string_ctors_test.cc
-  #  ${SOURCE_DIR}/string_assign_test.cc
-  #  ${SOURCE_DIR}/string_properties_test.cc
-  #  ${SOURCE_DIR}/string_operations_test.cc
+  ${SOURCE_DIR}/string_assign_test.cc
+  ${SOURCE_DIR}/string_properties_test.cc
+  ${SOURCE_DIR}/string_operations_test.cc
 ) 
 
 target_link_libraries(unittests

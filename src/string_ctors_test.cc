@@ -34,7 +34,7 @@ TYPED_TEST(ConstructorsTests, Default) {
   //Arrange
 
   //Act
-  typename TestFixture::MyTestingString __str;
+  const typename TestFixture::MyTestingString __str;
 
   //Assert
   EXPECT_TRUE(__str.empty());
@@ -59,16 +59,14 @@ TYPED_TEST(ConstructorsTests, SingleChar) {
   //Arrange
   using value_type = typename TestFixture::value_type;
 
-  constexpr const value_type __ch = *(TestFixture::_str1.begin());
+  const value_type __ch = *(TestFixture::_str1.begin());
 
-  const std::basic_string<value_type> __cmp(__ch);
+  const std::basic_string<value_type> __cmp(1, __ch);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ch);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __cmp.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
@@ -79,18 +77,15 @@ TYPED_TEST(ConstructorsTests, CharsInLocal) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type __ch = *(TestFixture::_str1.begin());
+  const value_type __ch = *(TestFixture::_str1.begin());
   const size_type __count = 0x8e % TestFixture::_localBufferCapThreshold;
 
-  const std::basic_string<value_type> __cmp(__ch, __count);
+  const std::basic_string<value_type> __cmp(__count, __ch);
 
   //Act
   const typename TestFixture::MyTestingString __str(__count, __ch);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
-  EXPECT_GT(__str.capacity(), __count);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
@@ -101,9 +96,10 @@ TYPED_TEST(ConstructorsTests, CharsDynamic) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type __ch = *(TestFixture::_str1.begin());
-  const size_type __count = 0x8e % TestFixture::_localBufferCapThreshold +
+  const value_type __ch = *(TestFixture::_str1.begin());
+  size_type __count = 0x8e % TestFixture::_localBufferCapThreshold +
     TestFixture::_localBufferCapThreshold;
+  ADJUST_OUT(TestFixture::_localBufferLenThreshold + 1, __count);
 
   const std::basic_string<value_type> __cmp(__count, __ch);
 
@@ -111,8 +107,6 @@ TYPED_TEST(ConstructorsTests, CharsDynamic) {
   const typename TestFixture::MyTestingString __str(__count, __ch);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
@@ -123,14 +117,12 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInside) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type* __cStr = TestFixture::_str1;
+  const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__cStr,
-    TestFixture::_localBufferLenThreshold);
+  const std::basic_string<value_type> __other(__ilist);
 
-  //Local buffer guarantee
-  const size_type __reqPos = 6;
-  const size_type __pos = (__other.length() >= __reqPos) ? __reqPos : 0;
+  size_type __pos = 6;
+  ADJUST_POS_LOCAL(__other.length(), __pos);
 
   const std::basic_string<value_type> __cmp(__other, __pos);
 
@@ -138,8 +130,6 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInside) {
   const typename TestFixture::MyTestingString __str(__other, __pos);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __cmp.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
@@ -150,14 +140,12 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicPosInside) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type* __cStr = TestFixture::_str1.begin();
+  const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__cStr);
+  const std::basic_string<value_type> __other(__ilist);
 
-  //Dynamic buffer guarantee
-  const size_type __reqPos = 6;
-  const size_type __pos = (__other.length() > __reqPos +
-    TestFixture::_localBufferLenThreshold) ? __reqPos : 0;
+  size_type __pos = 6;
+  ADJUST_POS_DYNAMIC(__other.length(), __pos);
 
   const std::basic_string<value_type> __cmp(__other, __pos);
 
@@ -165,8 +153,6 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicPosInside) {
   const typename TestFixture::MyTestingString __str(__other, __pos);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __cmp.length());
   EXPECT_GT(__str.capacity(), __cmp.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
@@ -178,12 +164,13 @@ TYPED_TEST(ConstructorsTests, STLStringPosOutside) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type* __cStr = TestFixture::_str1.begin();
+  const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__cStr);
+  const std::basic_string<value_type> __other(__ilist);
 
   //Act
-  const size_type __pos = 1000;
+  size_type __pos = 1000;
+  ADJUST_OUT(__other.length() + 1, __pos);
 
   //Assert
   EXPECT_THROW( {
@@ -196,20 +183,13 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountValid) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type* __cStr = TestFixture::_str1.begin();
+  const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__cStr,
-    TestFixture::_localBufferLenThreshold);
+  const std::basic_string<value_type> __other(__ilist);
 
-  //Local buffer guarantee
-  const size_type __reqPos = 6;
-  const size_type __reqCount = TestFixture::_localBufferLenThreshold;
-
-  const size_type __pos = (__other.length() >= __reqPos) ? __reqPos : 0;
-  size_type __count = (__reqCount > TestFixture::_localBufferLenThreshold) ? 
-    TestFixture::_localBufferLenThreshold : __reqCount;
-  __count = (__other.length() > __reqPos + __reqCount) ? __reqCount :
-    __other.length() - __reqPos;
+  size_type __pos = 6;
+  size_type __count = TestFixture::_localBufferLenThreshold;
+  ADJUST_POS_COUNT_LOCAL(__other.length(), __pos, __count);
 
   const std::basic_string<value_type> __cmp(__other, __pos, __count);
 
@@ -217,9 +197,6 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountValid) {
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
-  EXPECT_GT(__str.capacity(), __count);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
@@ -230,18 +207,14 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountOver) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type* __cStr = TestFixture::_str1.begin(); 
+  const auto __ilist = TestFixture::_str1; 
 
-  const std::basic_string<value_type> __other(__cStr,
-    TestFixture::_localBufferLenThreshold);
+  const std::basic_string<value_type> __other(__ilist);
 
-  //Local buffer guarantee
-  const size_type __reqPos = 6;
-  const size_type __reqCount = 1000;
-
-  const size_type __pos = (__other.length() >= __reqPos) ? __reqPos : 0;
-  const size_type __count = (__count > __other.length()) ? __count :
-    __other.length() + 1;
+  size_type __pos = 6;
+  size_type __count = 1000;
+  ADJUST_POS_LOCAL(__other.length(), __pos);
+  ADJUST_OUT(__other.length() + 1, __count);
 
   const std::basic_string<value_type> __cmp(__other, __pos, __count);
 
@@ -249,9 +222,6 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountOver) {
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __cmp.length());
-  EXPECT_GT(__str.capacity(), __cmp.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
@@ -262,326 +232,328 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicPosInsideCountValid) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  constexpr const value_type* __cStr = TestFixture::_str1.begin();
+   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__cStr);
+  const std::basic_string<value_type> __other(__ilist);
 
-  //Dynamic buffer guarantee
-  const size_type __reqPos = 6;
-  const size_type __reqCount = TestFixture::_localBufferCapThreshold;
+  size_type __pos = 6;
+  size_type __count = TestFixture::_localBufferCapThreshold;
+  ADJUST_POS_COUNT_DYNAMIC(__other.length(), __pos, __count);
 
-  const size_type __pos = (__other.length() > __reqPos +
-    TestFixture::_localBufferLenThreshold) ? __reqPos : 0;
-  size_type __count = (__reqCount > TestFixture::_localBufferCapThreshold) ?
-    __reqCount : TestFixture::_localBufferCapThreshold;
-  __count = (__other.length() > __pos + __count) ? __count
-
-  const std::basic_string<value_type> __cmp(__other, __pos);
+  const std::basic_string<value_type> __cmp(__other, __pos, __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos, __count);
+  const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
   EXPECT_GT(__str.capacity(), __count);
-  EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos, __count,
-        __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, STLStringDynamicPosInsideCountOver) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist);
+
   size_type __pos = 6;
   size_type __count = 1000;
+  ADJUST_POS_DYNAMIC(__other.length(), __pos);
+  ADJUST_OUT(__other.length() + 1, __count);
+
+  const std::basic_string<value_type> __cmp(__other, __pos, __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos, __count);
+  const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length() - __pos);
-  EXPECT_GT(__str.capacity(), __other.length() - __pos);
+  EXPECT_GT(__str.capacity(), __cmp.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos,
-      std::char_traits<value_type>::length(__other.data()+ __pos),
-      __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, STLStringPosOutsideCounted) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist);
+
   size_type __pos = 1000;
-  size_type __count = 6;
+  const size_type __count = 6;
+  ADJUST_OUT(__other.length() + 1, __pos);
   //Act
 
   //Assert
   EXPECT_THROW( {
-    typename TestFixture::MyTestingString __str(__other, __pos, __count);
+    const typename TestFixture::MyTestingString __str(__other, __pos, __count);
   }, MyTypes::MyException );
 }
 
 TYPED_TEST(ConstructorsTests, MyStringLocalPosInside) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
-  // Local buffer guarantee
-  size_type __reqPos = 6;
-  size_type __pos =
-    (__other.length() > TestFixture::_localBufferCapThreshold) ?
-    __other.length() - TestFixture::_localBufferLenThreshold : __reqPos;
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
+  size_type __pos = 6;
+  ADJUST_POS_LOCAL(__other.length(), __pos);
+
+  const std::basic_string<value_type> __cmp(__other.data() + __pos);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos);
+  const typename TestFixture::MyTestingString __str(__other, __pos);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length() - __pos);
-  EXPECT_GT(__str.capacity(), __other.length() - __pos);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos,
-        std::char_traits<value_type>::length(__other.data() + __pos),
-        __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringDynamicPosInside) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
   size_type __pos = 6;
+  ADJUST_POS_DYNAMIC(__other.length(), __pos);
+
+  const std::basic_string<value_type> __cmp(__other.data() + __pos);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos);
+  const typename TestFixture::MyTestingString __str(__other, __pos);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length() - __pos);
-  EXPECT_GT(__str.capacity(), __other.length() - __pos);
+  EXPECT_GT(__str.capacity(), __cmp.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos,
-        std::char_traits<value_type>::length(__other.data() + __pos),
-        __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringPosOutside) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
+  size_type __pos = 1000;
+  ADJUST_OUT(__other.length() + 1, __pos);
 
   //Act
-  size_type __pos = 1000;
 
   //Assert
   EXPECT_THROW( {
-    typename TestFixture::MyTestingString __str(__other, __pos);
+    const typename TestFixture::MyTestingString __str(__other, __pos);
   }, MyTypes::MyException );
 }
 
 TYPED_TEST(ConstructorsTests, MyStringLocalPosInsideCountValid) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
-  // Local buffer guarantee
-  size_type __reqPos = 6;
-  size_type __pos =
-    (__other.length() > TestFixture::_localBufferCapThreshold) ?
-    __other.length() - TestFixture::_localBufferLenThreshold : __reqPos;
-  size_type __count =
-    (__other.size() - __pos > TestFixture::_localBufferCapThreshold) ?
-    TestFixture :: _localBufferCapThreshold : __other.size() - __pos - 1;
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
+  size_type __pos = 6;
+  size_type __count = TestFixture::_localBufferLenThreshold;
+  ADJUST_POS_COUNT_LOCAL(__other.length(), __pos, __count);
+
+  const std::basic_string<value_type> __cmp(__other.data() +  __pos, __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos, __count);
+  const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
-  EXPECT_GT(__str.capacity(), __count);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos, __count,
-        __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringLocalPosInsideCountOver) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
-  // Local buffer guarantee
-  size_type __reqPos = 6;
-  size_type __pos =
-    (__other.length() > TestFixture::_localBufferCapThreshold) ?
-    __other.length() - TestFixture::_localBufferLenThreshold : __reqPos;
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
+  size_type __pos = 6;
   size_type __count = 1000;
+  ADJUST_POS_LOCAL(__other.length(), __pos);
+  ADJUST_OUT(__other.length() + 1, __count);
+
+  const std::basic_string<value_type> __helper(__ilist);
+  const std::basic_string<value_type> __cmp(__helper, __pos, __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos, __count);
+  const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length() - __pos);
-  EXPECT_GT(__str.capacity(), __other.length() - __pos);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos,
-        std::char_traits<value_type>::length(__other.data() + __pos),
-        __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringDynamicPosInsideCountValid) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
   size_type __pos = 6;
-  size_type __count =
-    TestFixture::_localBufferCapThreshold + 1;
+  size_type __count = TestFixture::_localBufferCapThreshold + 1;
+  ADJUST_POS_COUNT_DYNAMIC(__other.length(), __pos, __count);
+
+  const std::basic_string<value_type> __cmp(__other.data() + __pos, __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos, __count);
+  const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
-  EXPECT_GT(__str.capacity(), __count);
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos, __count,
-        __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringDynamicPosInsideCountOver) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
   size_type __pos = 6;
   size_type __count = 1000;
+  ADJUST_POS_DYNAMIC(__other.length(), __pos);
+  ADJUST_OUT(__other.length(), __count);
+
+  const std::basic_string<value_type> __helper(__ilist);
+  const std::basic_string<value_type> __cmp(__helper, __pos, __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, __pos, __count);
+  const typename TestFixture::MyTestingString __str(__other, __pos, __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length() - __pos);
-  EXPECT_GT(__str.capacity(), __other.length() - __pos);
-  EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(
-      TestingHelper::CustomStrCmp(__other.data() + __pos,
-      std::char_traits<value_type>::length(__other.data()+ __pos),
-      __str.data(), __str.length()), 0);
+  EXPECT_GT(__str.capacity(), __cmp.length());
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringPosOutsideCounted) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
   size_type __pos = 1000;
-  size_type __count = 6;
+  const size_type __count = 6;
+  ADJUST_OUT(__other.length() + 1, __pos);
+
   //Act
 
   //Assert
   EXPECT_THROW( {
-    typename TestFixture::MyTestingString __str(__other, __pos, __count);
+    const typename TestFixture::MyTestingString __str(__other, __pos, __count);
   }, MyTypes::MyException );
 }
 
 TYPED_TEST(ConstructorsTests, CStringLocalCounted) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  size_type __count =
-    TestFixture::_localBufferCapThreshold - 2;
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  size_type __count = TestFixture::_localBufferCapThreshold - 2;
+  ADJUST_IN(TestFixture::_localBufferLenThreshold, __count);
+
+  const std::basic_string<value_type> __cmp(__ilist.begin(), __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__cStr, __count);
+  const typename TestFixture::MyTestingString __str(__ilist.begin(), __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __count, __str.data(),
-    __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, CStringDynamicCounted) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  size_type __reqCount =
-    TestFixture::_localBufferCapThreshold + 2;
-  size_type __count =
-    (std::char_traits<value_type>::length(__cStr) > __reqCount) ?
-    __reqCount : std::char_traits<value_type>::length(__cStr);
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  size_type __count = TestFixture::_localBufferLenThreshold + 1;
+  ADJUST_OUT(TestFixture::_localBufferLenThreshold + 1, __count);
+
+  const std::basic_string<value_type> __cmp(__ilist.begin(), __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__cStr, __count);
+  const typename TestFixture::MyTestingString __str(__ilist.begin(), __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __count);
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __count, __str.data(),
-    __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, CStringNullptrCountGTZero) {
   //Arrange
-  using const_pointer = typename TestFixture::const_pointer;
-  const_pointer __cStr = nullptr;
+  using value_type = typename TestFixture::value_type;
+  using size_type = typename TestFixture::size_type;
+
+  const value_type* __cStr = nullptr;
   size_type __count = 1;
+  ADJUST_OUT(1, __count);
+
   //Act
 
   //Assert
   EXPECT_THROW({
-    typename TestFixture::MyTestingString __str(__cStr, __count);
+    const typename TestFixture::MyTestingString __str(__cStr, __count);
   }, MyTypes::MyException);
 
 }
 
 TYPED_TEST(ConstructorsTests, CStringNullptrCountEQZero) {
   //Arrange
-  using const_pointer = typename TestFixture::const_pointer;
-  const_pointer __cStr = nullptr;
-  size_type __count = 0;
+  using value_type = typename TestFixture::value_type;
+  using size_type = typename TestFixture::size_type;
+
+  const value_type* __cStr = nullptr;
+  const size_type __count = 0;
 
   //Act
-  typename TestFixture::MyTestingString __str(__cStr, __count);
+  const typename TestFixture::MyTestingString __str(__cStr, __count);
 
   //Assert
   EXPECT_TRUE(__str.empty());
@@ -591,53 +563,51 @@ TYPED_TEST(ConstructorsTests, CStringNullptrCountEQZero) {
 TYPED_TEST(ConstructorsTests, CStringLocal) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  auto __cStrLen = std::char_traits<value_type>::length(__cStr);
-  size_type __pos =
-    (__cStrLen > TestFixture::_localBufferCapThreshold) ?
-     __cStrLen - TestFixture::_localBufferLenThreshold : 0;
+  using size_type = typename TestFixture::size_type;
+
+  const auto __ilist = TestFixture::_str1;
+  size_type __count = TestFixture::_localBufferLenThreshold;
+  ADJUST_IN(TestFixture::_localBufferLenThreshold, __count);
+
+  const std::basic_string<value_type> __cmp(__ilist.begin(), __count);
 
   //Act
-  typename TestFixture::MyTestingString __str(__cStr + __pos);
+  const typename TestFixture::MyTestingString __str(__ilist.begin(), __count);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __cStrLen - __pos);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr + __pos, __cStrLen - __pos,
-     __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, CStringDynamic) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  auto __cStrLen = std::char_traits<value_type>::length(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __cmp(__ilist.begin(), __ilist.size());
 
   //Act
-  typename TestFixture::MyTestingString __str(__cStr);
+  const typename TestFixture::MyTestingString __str(__ilist.begin(),
+    __ilist.size());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __cStrLen);
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __cStrLen, __str.data(),
-    __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, CStringNullptr) {
   //Arrange
-  using const_pointer = typename TestFixture::const_pointer;
-  const_pointer __cStr = nullptr;
+  using value_type = typename TestFixture::value_type;
+
+  const value_type* __ilist = nullptr;
+
   //Act
 
   //Assert
   EXPECT_THROW({
-    typename TestFixture::MyTestingString __str(__cStr);
+    const typename TestFixture::MyTestingString __str(__ilist);
   }, MyTypes::MyException);
 
 }
@@ -645,327 +615,322 @@ TYPED_TEST(ConstructorsTests, CStringNullptr) {
 TYPED_TEST(ConstructorsTests, InputIterLocal) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr,
-      TestFixture::_localBufferLenThreshold);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist.begin(),
+    TestFixture::_localBufferLenThreshold);
+
+  const std::basic_string<value_type> __cmp(__other.begin(), __other.end()); 
 
   //Act
-  typename TestFixture::MyTestingString __str(__other.begin(), __other.end());
+  const typename TestFixture::MyTestingString __str(__other.begin(),
+    __other.end());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, InputIterDynamic) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist);
+
+  const std::basic_string<value_type> __cmp(__other.begin(), __other.end());
 
   //Act
-  typename TestFixture::MyTestingString __str(__other.begin(), __other.end());
+  const typename TestFixture::MyTestingString __str(__other.begin(),
+    __other.end());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, STLStringLocal) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr,
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
+  const std::basic_string<value_type> __cmp(__other);
+
   //Act
-  typename TestFixture::MyTestingString __str(__other);
+  const typename TestFixture::MyTestingString __str(__other);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, STLStringDynamic) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist);
+
+  const std::basic_string<value_type> __cmp(__other);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other);
+  const typename TestFixture::MyTestingString __str(__other);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, STLStringLocalAlloc) {
   //Arrange
   using value_type = typename TestFixture::value_type;
   using allocator_type = typename TestFixture::allocator_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr,
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
+  const std::basic_string<value_type> __cmp(__other);
+
   //Act
-  typename TestFixture::MyTestingString __str(__other, allocator_type());
+  const typename TestFixture::MyTestingString __str(__other, allocator_type());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, STLStringDynamicAlloc) {
   //Arrange
   using value_type = typename TestFixture::value_type;
   using allocator_type = typename TestFixture::allocator_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  std::basic_string<value_type> __other(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __other(__ilist);
+
+  const std::basic_string<value_type> __cmp(__other);
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, allocator_type());
+  const typename TestFixture::MyTestingString __str(__other, allocator_type());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringLocal) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr,
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
+  const std::basic_string<value_type> __cmp(__other.data());
+
   //Act
-  typename TestFixture::MyTestingString __str(__other);
+  const typename TestFixture::MyTestingString __str(__other);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringDynamic) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
+  const std::basic_string<value_type> __cmp(__other.data());
 
   //Act
-  typename TestFixture::MyTestingString __str(__other);
+  const typename TestFixture::MyTestingString __str(__other);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringLocalAlloc) {
   //Arrange
   using value_type = typename TestFixture::value_type;
   using allocator_type = typename TestFixture::allocator_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr,
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
+  const std::basic_string<value_type> __cmp(__other.data());
+
   //Act
-  typename TestFixture::MyTestingString __str(__other, allocator_type());
+  const typename TestFixture::MyTestingString __str(__other, allocator_type());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MyStringDynamicAlloc) {
   //Arrange
   using value_type = typename TestFixture::value_type;
   using allocator_type = typename TestFixture::allocator_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __other(__ilist);
+
+  const std::basic_string<value_type> __cmp(__other.data());
 
   //Act
-  typename TestFixture::MyTestingString __str(__other, allocator_type());
+  const typename TestFixture::MyTestingString __str(__other, allocator_type());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __other.length());
   EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__other.data(), __other.length(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, MoveMyStringLocal) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr,
+
+  const auto __ilist = TestFixture::_str1;
+
+  typename TestFixture::MyTestingString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
-  size_type __prevLen = __other.length();
+
+  auto __prevLen = __other.length();
 
   //Act
-  typename TestFixture::MyTestingString __str(std::move(__other));
+  const typename TestFixture::MyTestingString __str(std::move(__other));
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_TRUE(__other.empty());
   EXPECT_EQ(__str.length(), __prevLen);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __prevLen, __str.data(),
-    __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __ilist.begin(),
+    __str.length());
 }
 
 TYPED_TEST(ConstructorsTests, MoveMyStringDynamic) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
-  size_type __prevLen = __other.length();
+
+  const auto __ilist = TestFixture::_str1;
+
+  typename TestFixture::MyTestingString __other(__ilist);
+  auto __prevLen = __other.length();
 
   //Act
-  typename TestFixture::MyTestingString __str(std::move(__other));
+  const typename TestFixture::MyTestingString __str(std::move(__other));
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_TRUE(__other.empty());
   EXPECT_EQ(__str.length(), __prevLen);
-  EXPECT_EQ(__other.capacity(), TestFixture::_localBufferCapThreshold);
   EXPECT_GT(__str.capacity(), __prevLen);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __prevLen, __str.data(),
-    __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __ilist.begin(),
+    __ilist.size());
+
+  EXPECT_TRUE(__other.empty());
+  EXPECT_EQ(__other.capacity(), TestFixture::_localBufferCapThreshold);
 }
 
 TYPED_TEST(ConstructorsTests, MoveMyStringLocalAlloc) {
   //Arrange
   using value_type = typename TestFixture::value_type;
   using allocator_type = typename TestFixture::allocator_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr,
+
+  const auto __ilist = TestFixture::_str1;
+
+  typename TestFixture::MyTestingString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
-  size_type __prevLen = __other.length();
+  auto __prevLen = __other.length();
 
   //Act
-  typename TestFixture::MyTestingString __str(std::move(__other),
+  const typename TestFixture::MyTestingString __str(std::move(__other),
     allocator_type());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_TRUE(__other.empty());
   EXPECT_EQ(__str.length(), __prevLen);
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __prevLen, __str.data(),
-    __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __ilist.begin(),
+    __str.length());
 }
 
 TYPED_TEST(ConstructorsTests, MoveMyStringDynamicAlloc) {
   //Arrange
   using value_type = typename TestFixture::value_type;
   using allocator_type = typename TestFixture::allocator_type;
-  constexpr const value_type __cStr[] =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
-  typename TestFixture::MyTestingString __other(__cStr);
+
+  const auto __ilist = TestFixture::_str1;
+
+  typename TestFixture::MyTestingString __other(__ilist);
   auto __prevLen = __other.length();
 
   //Act
-  typename TestFixture::MyTestingString __str(std::move(__other),
+  const typename TestFixture::MyTestingString __str(std::move(__other),
     allocator_type());
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_TRUE(__other.empty());
   EXPECT_EQ(__str.length(), __prevLen);
+  EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __ilist.begin(),
+    __ilist.size());
+
+  EXPECT_TRUE(__other.empty());
   EXPECT_EQ(__other.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_GT(__str.capacity(), __prevLen);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__cStr, __prevLen, __str.data(),
-    __str.length()), 0);
 }
 
 TYPED_TEST(ConstructorsTests, InitaiazierListLocal) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  std::initializer_list<value_type> __ilist =
-    {'H', 'e', 'l'};
+  const std::initializer_list<value_type> __ilist =  {'H', 'e', 'l'};
+
+  const std::basic_string<value_type> __cmp(__ilist);
 
   //Act
-  typename TestFixture::MyTestingString __str(__ilist);
+  const typename TestFixture::MyTestingString __str(__ilist);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __ilist.size());
   EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__ilist.begin(), __ilist.size(),
-    __str.data(), __str.length()), 0);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
 
 TYPED_TEST(ConstructorsTests, InitaiazierListDynamic) {
   //Arrange
   using value_type = typename TestFixture::value_type;
-  using allocator_type = typename TestFixture::allocator_type;
 
-  std::initializer_list<value_type> __ilist =
-    {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
+  const auto __ilist = TestFixture::_str1;
+
+  const std::basic_string<value_type> __cmp(__ilist);
 
   //Act
-  typename TestFixture::MyTestingString __str(__ilist);
+  const typename TestFixture::MyTestingString __str(__ilist);
 
   //Assert
-  EXPECT_FALSE(__str.empty());
-  EXPECT_EQ(__str.length(), __ilist.size());
-  EXPECT_GT(__str.capacity(), __ilist.size());
-  EXPECT_EQ(TestingHelper::CustomStrCmp(__ilist.begin(), __ilist.size(),
-    __str.data(), __str.length()), 0);
+  EXPECT_GT(__str.capacity(), TestFixture::_localBufferCapThreshold);
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }

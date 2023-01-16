@@ -667,7 +667,7 @@ class MyBasicString {
   void _Construct(_ForwardIter __beg, _ForwardIter __end,
                   std::forward_iterator_tag) {
     size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
-    if (__dnew > size_type(_localCapacity)) {
+    if (__dnew + 1 > size_type(_localCapacity)) {
       size_type __reqCap = __dnew + 1;
       this->_Data(this->_Create(__reqCap, size_type(0)));
       this->_Capacity(__reqCap);
@@ -742,7 +742,7 @@ class MyBasicString {
   }
 
   size_type _Check(size_type __pos, const char* __methodName) const {
-    if (__pos >= this->length()) {
+    if (__pos > this->length()) {
       __ThrowMyExceptionFmt<MyOutOfRange>(
         ("Out of range in %s: __pos (which is %zu) > "
          " this->length() (which is %zu)"),
@@ -755,7 +755,7 @@ class MyBasicString {
   static size_type _Check(
     const std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
     size_type __pos, const char* __methodName) {
-    if (__pos >= __other.length()) {
+    if (__pos > __other.length()) {
       __ThrowMyExceptionFmt<MyOutOfRange>(
         ("Out of range in %s: __pos (which is %zu) > __other.length()" 
          " [decltype(__other) = basic_string] (which is %zu)"),
@@ -1127,6 +1127,7 @@ MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(MyBasicString&& __other) noexcept
     : MyBasicString(this->_LocalData(), std::move(__other._GetAllocator())) {
 
+  std::cout << __other._IsLocal() << std::endl;
   if (__other._IsLocal()) {
     traits_type::copy(_localData, __other._localData, __other.length() + 1);
   } else {
@@ -1418,14 +1419,26 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::reference
 MyBasicString<_CharT, _Traits, _Alloc>::
 at(size_type __pos) {
-  return this->_Data()[this->_Check(__pos, "MyBasicString::at")];
+  if (__pos >= this->length()) {
+    __ThrowMyExceptionFmt<MyOutOfRange>(
+      ("Out of range in %s: __pos (which is %zu) >= "
+       " this->length() (which is %zu)"),
+       "MyBasicString::at", __pos, this->length());
+  }
+  return this->_Data()[__pos];
 }
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::const_reference
 MyBasicString<_CharT, _Traits, _Alloc>::
 at(size_type __pos) const {
-  return this->_Data()[this->_Check(__pos, "MyBasicString::at")];
+  if (__pos >= this->length()) {
+    __ThrowMyExceptionFmt<MyOutOfRange>(
+      ("Out of range in %s: __pos (which is %zu) >= "
+       " this->length() (which is %zu)"),
+       "MyBasicString::at", __pos, this->length());
+  }
+  return this->_Data()[__pos];
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1743,8 +1756,8 @@ MyBasicString<_CharT, _Traits, _Alloc>::
 insert(size_type __idx, const MyBasicString& __other, size_type __idxStr,
        size_type __count) {
   return this->replace(__idx, size_type(0), __other._Data() + 
-    this->_Check(__idxStr, "MyBasicString::insert"),
-    this->_Limit(__idxStr, __count));
+    __other._Check(__idxStr, "MyBasicString::insert"),
+    __other._Limit(__idxStr, __count));
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1793,7 +1806,7 @@ erase(size_type __idx, size_type __count) {
   if (__count == npos) {
     this->_SetLength(__idx);
   } else if (__count != 0) {
-    this->_Erase(__idx, __count);
+    this->_Erase(__idx, this->_Limit(__idx, __count));
   }
   return *this;
 }

@@ -9,19 +9,27 @@
 #include "my_string.h"
 
 #define EXPECT_STREQ_CUSTOM(__cStr1, __cStr1Len, __cStr2, __cStr2Len) \
-  TestingHelper::_CustomStrEq(__cStr1, __cStr1Len, __cStr2, __cStr2Len)
+  EXPECT_TRUE( \
+    TestingHelper::_CustomStrEq(__cStr1, __cStr1Len, __cStr2, __cStr2Len) \
+  )
 
-#define ADJUST_POS_LOCAL(__str, __pos) \
-  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::LOCAL)
+#define ADJUST_POS_LOCAL(__length, __pos) \
+  TestFixture::_Adjust(__length, __pos, TestingHelper::Adjustment::LOCAL)
 
-#define ADJUST_POS_DYNAMIC(__str, __pos) \
-  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::DYNAMIC)
+#define ADJUST_POS_DYNAMIC(__length, __pos) \
+  TestFixture::_Adjust(__length, __pos, TestingHelper::Adjustment::DYNAMIC)
 
-#define ADJUST_POS_COUNT_LOCAL(__str, __pos, __count) \
-  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::LOCAL)
+#define ADJUST_POS_COUNT_LOCAL(__length, __pos, __count) \
+  TestFixture::_Adjust(__length, __pos, TestingHelper::Adjustment::LOCAL)
 
-#define ADJUST_POS_COUNT_DYNAMIC(__str, __pos, __count) \
-  TestFixture::_AdjustDispatch(__str, __pos, TestingHelper::Adjustment::DYNAMIC)
+#define ADJUST_POS_COUNT_DYNAMIC(__length, __pos, __count) \
+  TestFixture::_Adjust(__length, __pos, TestingHelper::Adjustment::DYNAMIC)
+
+#define ADJUST_OUT(__reqested, __var) \
+  __var = (__var > __reqested) ? __var : __reqested
+
+#define ADJUST_IN(__reqested, __var) \
+  __var = (__var < __reqested) ? __var : __reqested
 
 namespace TestingHelper {
 
@@ -75,30 +83,44 @@ class StringTestingBase : public ::testing::Test {
 
   const std::initializer_list<value_type> _str1 = 
     {'H', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', ' ', 'H', 'e', 'l',
-     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd', '\0'};
+     'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
   const std::initializer_list<value_type> _str2 =
     {'T', 'h', 'e', ' ', 'h', 'o', 'u', 's', 'e', ' ', 'o', 'f', ' ', 't', 'h',
-     'e', ' ', 'r', 'i', 's', 'i','n', 'g', ' ', 's', 'u', 'n', '\0' };
+     'e', ' ', 'r', 'i', 's', 'i','n', 'g', ' ', 's', 'u', 'n'};
 
   void SetUp() override {
     ASSERT_GT(_str1.size(), _localBufferCapThreshold);
     ASSERT_GT(_str2.size(), _localBufferCapThreshold);
   }
 
-  void _AdjustDispatch(const std::basic_string<value_type> __str,
-    size_type& __pos, ::TestingHelper::Adjustment __adjust) {
-    switch(__adjust) {
-      case ::TestingHelper::LOCAL: {
-        if (__pos > __str.length() ) { __pos = 0; }
-        if (__pos + _localBufferLenThreshold < __str.length()) {
-          __pos = 
+  void _Adjust(const size_type __length, size_type& __pos,
+    TestingHelper::Adjustment __adjust) {
+    size_type __count = __length + 1;
+    _Adjust(__length, __pos, __count, __adjust);
+}
+
+  void _Adjust(const size_type __length, size_type& __pos, size_type& __count,
+    TestingHelper::Adjustment __adjust) {
+    if (__pos < 0) { __pos = 0; }
+    switch (__adjust) {
+      case TestingHelper::LOCAL: {
+        if (__count <= 0 || __count > _localBufferLenThreshold) {
+          __count = _localBufferLenThreshold;
+        }
+        if (__pos + __count < __length) {
+          __pos = __length - __count;
         }
         break;
       }
-      case ::TestingHelper::DYNAMIC: {
-        if (__pos > __str.length() )
+      case TestingHelper::DYNAMIC: {
+        if (__count <= _localBufferLenThreshold || __count > __length) {
+          __count = _localBufferLenThreshold + 1;
+        }
+        if (__pos + __count > __length) {
+          __pos = __length - __count;
+        }
         break;
-      } 
+      }
     }
   }
 };
@@ -125,7 +147,6 @@ template <typename _CharT>
     ::testing::AssertionSuccess() : ::testing::AssertionFailure();
 }
 
-
-} // namespace TesingHelper
+} // namespace TestingHelper
 
 #endif // _TESTS_UTILS_H
