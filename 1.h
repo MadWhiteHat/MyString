@@ -13,9 +13,11 @@
 //------------------------------------None------------------------------------//
 
 // 3. C++ standard library headers
+#include <iostream>
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <algorithm>
 // 4. Other libraries' .h files.
 //------------------------------------None------------------------------------//
 
@@ -28,8 +30,6 @@
 // Custom function names: UpperCamelCase
 
 namespace MyTypes {
-
-#ifdef _AHO_CORASICK_SEARCH
 
 template <typename _String,
           typename _EqComparator = std::equal_to<typename _String::value_type>>
@@ -164,7 +164,6 @@ class PatternSearcher {
 
   std::vector<_Vertex> _trie;
   std::vector<std::reference_wrapper<const string_type>> _patterns;
-
 };
 
 template <typename _String, typename _EqComparator>
@@ -177,7 +176,7 @@ template <typename _String, typename _EqComparator>
 PatternSearcher<_String, _EqComparator>::
 PatternSearcher(const std::vector<string_type>& __patterns)
     : PatternSearcher() {
-  for (auto &__pattern : __patterns) { AddToTrie(__pattern); }
+  for (const auto& __pattern : __patterns) { AddToTrie(__pattern); }
 }
 
 template <typename _String, typename _EqComparator>
@@ -209,20 +208,14 @@ operator()(const string_type&__word) {
   size_type __u = 0;
   for (pos_type __idx = 0; __idx < __word.length(); ++__idx) {
     __u = _GetAutoMove(__u, __word[__idx]);
-    auto __resPair  = _Check(__u, __idx + 1);
+    auto __resPair = _Check(__u, __idx + 1);
     if (__resPair.second != npos) {
       __res.push_back(std::move(__resPair));
     }
-    
   }
   std::sort(__res.begin(), __res.end(), SortCompare{});
   return __res;
 }
-
-#else
-// Enable Boyer-Moore search algo
-
-#endif
 
 } // namespace MyTypes
 

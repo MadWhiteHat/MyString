@@ -85,7 +85,7 @@ class MyBasicString {
   using reverse_iterator = MyReverseIterator<iterator>;
   using const_reverse_iterator = MyReverseIterator<const_iterator>;
 
-  static const size_type npos = static_cast<size_type>(-1);
+  static constexpr size_type npos = static_cast<size_type>(-1);
 
 //--------------------------------Constructors--------------------------------//
 
@@ -501,8 +501,7 @@ class MyBasicString {
   const noexcept;
   _CXX20_CONSTEXPR
   size_type find(const std::basic_string<value_type>& __other,
-                 size_type __pos = 0)
-  const noexcept;
+                 size_type __pos = 0) const noexcept;
   _CXX20_CONSTEXPR
   size_type find(const_pointer __cStr, size_type __pos, size_type __count)
   const;
@@ -1126,8 +1125,6 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(MyBasicString&& __other) noexcept
     : MyBasicString(this->_LocalData(), std::move(__other._GetAllocator())) {
-
-  std::cout << __other._IsLocal() << std::endl;
   if (__other._IsLocal()) {
     traits_type::copy(_localData, __other._localData, __other.length() + 1);
   } else {
@@ -1852,7 +1849,7 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 append(size_type __count, value_type __ch) {
-  return this->_ReplaceAux(size_type(0), this->length(), __count, __ch);
+  return this->_ReplaceAux(this->length(), size_type(0), __count, __ch);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1992,7 +1989,7 @@ int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
 compare(size_type __pos1, size_type __count1, const MyBasicString& __other)
 const {
-  return this->compare(__pos1, __count1, __other, __other.length(), npos);
+  return this->compare(__pos1, __count1, __other, size_type(0), npos);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2001,7 +1998,7 @@ int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
 compare(size_type __pos1, size_type __count1,
         const std::basic_string<value_type>& __other) const {
-  return this->compare(__pos1, __count1, __other, __other.length(), npos);
+  return this->compare(__pos1, __count1, __other, size_type(0), npos);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2066,7 +2063,7 @@ _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
 starts_with(value_type __ch) const noexcept {
-  return !this->empty() && traits_type(this->front() == __ch);
+  return (!this->empty() && this->front() == __ch);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2074,7 +2071,8 @@ _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
 starts_with(const_pointer __cStr) const {
-  return this->_Compare(this->_Data(), this->length(), __cStr,
+  size_type __len = std::min(this->length(), traits_type::length(__cStr));
+  return this->_Compare(this->_Data(), __len, __cStr,
     traits_type::length(__cStr)) == 0;
 }
 
@@ -2083,7 +2081,7 @@ _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
 ends_with(value_type __ch) const noexcept {
-  return !this->empty() && traits_type(this->back() == __ch);
+  return !this->empty() && this->back() == __ch;
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2103,7 +2101,7 @@ _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
 contains(value_type __ch) const noexcept {
-  return this-> find(__ch) != npos;
+  return this->find(__ch) != npos;
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2139,7 +2137,7 @@ MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end,
         const MyBasicString& __other) {
-  return this->replace(__beg, __end, __other.cbegin(), __other.cend());
+  return this->replace(__beg, __end, __other.data(), __other.length());
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2148,7 +2146,7 @@ MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end,
         const std::basic_string<value_type>& __other) {
-  return this->replace(__beg, __end, __other.cbegin(), __other.cend());
+  return this->replace(__beg, __end, __other.data(), __other.length());
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2171,7 +2169,7 @@ replace(size_type __pos1, size_type __count1,
         const std::basic_string<value_type>& __other, size_type __pos2,
         size_type __count2) {
   return this->_Replace(this->_Check(__pos1, "MyBasicString::replace"),
-    this->_Limit(__pos1, __count1, "MyBasicString::replace"),
+    this->_Limit(__pos1, __count1),
     __other.data() + this->_Check(__other, __pos2, "MyBasicString::replace"),
     this->_Limit(__other, __pos2, __count2));
 }
@@ -2238,7 +2236,7 @@ MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end, size_type __count,
     value_type __ch) {
-  return this->_ReplaceAux(__beg - this->cbegin(), __end - __beg, __count,
+  return this->replace(__beg - this->cbegin(), __end - __beg, __count,
       __ch);
 }
 
@@ -2265,8 +2263,12 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
 copy(pointer __dest, size_type __count, size_type __pos) const {
-  this->_Copy(__dest, this->_Data() + _Check(__pos, "MyBasicString::copy"),
-    this->_Limit(__pos, __count));
+  _Check(__pos, "MyBasicString::copy");
+  auto __total = this->_Limit(__pos, __count);
+  if (__total) {
+    this->_Copy(__dest, this->_Data() + __pos, __total);
+  }
+  return __total; 
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2282,7 +2284,7 @@ MyBasicString<_CharT, _Traits, _Alloc>::
 resize(size_type __count, value_type __ch) {
   const size_type __length = this->length();
   if (__length < __count) {
-    this->append(__length - __count, __ch);
+    this->append(__count - __length, __ch);
   } else if (__length > __count) {
     this->_SetLength(__count);
   }
@@ -2354,19 +2356,322 @@ _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
 find(const MyBasicString& __other, size_type __pos) const noexcept {
+  return this->find(__other.data(), __pos, __other.length());
+} 
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find(const std::basic_string<value_type>& __other,
+                 size_type __pos) const noexcept {
+  return this->find(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find(const_pointer __cStr, size_type __pos, size_type __count) const {
+  const auto __length = this->length();
+  if (__count == 0) { return (__pos <= __length) ? __pos : npos; }
+  if (__pos >= __length) { return npos; }
+
   std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
-  __vs.push_back(__other.data());
+  __vs.emplace_back(__cStr, __count);
   MyTypes::PatternSearcher<MyBasicString> __search(__vs);
-  auto __res = __search(*this);
-  std::cout << __res.size() << std::endl;
-  for (auto& __el : __res) {
-    if (__el.second > __pos) { return __el.second; }
+  const auto __res = __search(*this);
+  for (const auto& __el : __res) {
+    if (__el.second >= __pos) { return __el.second; }
   }
   return npos;
 }
 
-namespace PMR {
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find(const_pointer __cStr, size_type __pos) const {
+  return this->find(__cStr, __pos, traits_type::length(__cStr));
+}
 
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find(value_type __ch, size_type __pos) const noexcept {
+  return this->find(&__ch, __pos, size_type(1));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+rfind(const MyBasicString& __other, size_type __pos) const noexcept {
+  return this->rfind(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+rfind(const std::basic_string<value_type>& __other,  size_type __pos) const
+noexcept {
+  return this->rfind(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+rfind(const_pointer __cStr, size_type __pos, size_type __count) const {
+
+  std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
+  __vs.emplace_back(__cStr, __count);
+  MyTypes::PatternSearcher<MyBasicString> __search(__vs);
+  auto __res = __search(*this);
+  std::reverse(__res.begin(), __res.end());
+  for (const auto& __el : __res) {
+    if (__el.second <= __pos) { return __el.second; }
+  }
+  return npos; 
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+rfind(const_pointer __cStr, size_type __pos) const {
+  return this->rfind(__cStr, __pos, traits_type::length(__cStr));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+rfind(value_type __ch, size_type __pos) const noexcept {
+  return this->rfind(&__ch, __pos, size_type(1));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_of(const MyBasicString& __other, size_type __pos) const noexcept {
+  return this->find_first_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_of(const std::basic_string<value_type>& __other, size_type __pos)
+const noexcept {
+  return this->find_first_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_of(const_pointer __cStr, size_type __pos, size_type __count) const {
+  if (__count == 0 || __pos >= this->length()) { return npos; }
+
+  std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
+  for (size_type i = 0; i < __count; ++i) {
+    __vs.emplace_back(__cStr[i]);
+  }
+  MyTypes::PatternSearcher __search(__vs);
+  const auto __res = __search(*this);
+  for (const auto& __el : __res) {
+    if (__el.second >= __pos) { return __el.second; }
+  }
+  return npos;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_of(const_pointer __cStr, size_type __pos) const {
+  return this->find_first_of(__cStr, __pos, traits_type::length(__cStr));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_of(value_type __ch, size_type __pos) const noexcept {
+  return this->find(__ch, __pos);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_not_of(const MyBasicString& __other, size_type __pos) const noexcept
+{ return this->find_first_not_of(__other.data(), __pos, __other.length()); }
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_not_of(const std::basic_string<value_type>& __other, size_type __pos)
+const noexcept {
+  return this->find_first_not_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_not_of(const_pointer __cStr, size_type __pos, size_type __count)
+const {
+  if (__count == 0 || __pos >= this->length()) { return npos; }
+
+  std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
+  for (size_type i = 0; i < __count; ++i) {
+    __vs.emplace_back(__cStr[i]);
+  }
+  MyTypes::PatternSearcher __search(__vs);
+  const auto __res = __search(*this);
+  size_type __idx = __pos;
+  auto __beg = __res.cbegin();
+  auto __end = __res.cend();
+  for (;__beg != __end && __idx > __beg->second; ++__beg);
+  while (__beg != __end && __idx < this->length()) {
+    if (__idx != __beg->second) { return __idx; }
+    ++__idx;
+    ++__beg;
+  }
+  return npos;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_not_of(const_pointer __cStr, size_type __pos) const {
+  return this->find_first_not_of(__cStr, __pos, traits_type::length(__cStr));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_first_not_of(value_type __ch, size_type __pos) const noexcept {
+  for (size_type __idx = __pos; __idx < this->length(); ++__idx) {
+    if (this->_Data()[__idx] != __ch) { return __idx; }
+  }
+  return npos;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_of(const MyBasicString& __other, size_type __pos) const noexcept {
+  return this->find_last_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_of(const std::basic_string<value_type>& __other, size_type __pos)
+const noexcept {
+  return this->find_last_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_of(const_pointer __cStr, size_type __pos, size_type __count) const {
+  if (this->length() == 0) { return npos; }
+  if (__count == 0) { return (__pos > this->length()) ? npos : __pos; }
+  if (__pos == npos) { __pos = this->length(); }
+
+  std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
+  for (size_type i = 0; i < __count; ++i) {
+    __vs.emplace_back(__cStr[i]);
+  }
+  MyTypes::PatternSearcher __search(__vs);
+  auto __res = __search(*this);
+  std::reverse(__res.begin(), __res.end());
+  for (const auto& __el : __res) {
+    if (__el.second <= __pos) { return __el.second; }
+  }
+  return npos;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_of(const_pointer __cStr, size_type __pos) const {
+  return this->find_last_of(__cStr, __pos, traits_type::length(__cStr));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_of(value_type __ch, size_type __pos) const noexcept {
+  return this->rfind(__ch, __pos);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_not_of(const MyBasicString& __other, size_type __pos) const noexcept {
+  return this->find_last_not_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_not_of(const std::basic_string<value_type>& __other, size_type __pos)
+const noexcept {
+  return this->find_last_not_of(__other.data(), __pos, __other.length());
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_not_of(const_pointer __cStr, size_type __pos, size_type __count)
+const {
+  if (this->length() == 0) { return npos; }
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_not_of(const_pointer __cStr, size_type __pos) const {
+  return this->find_last_not_of(__cStr, __pos, traits_type::length(__cStr));
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
+MyBasicString<_CharT, _Traits, _Alloc>::
+find_last_not_of(value_type __ch, size_type __pos) const noexcept {
+  size_type __len = this->length();
+  if (__len) {
+    if (--__len > __pos) { __len = __pos; }
+    do {
+      if (this->_Data()[__len] != __ch) { return __len; }
+    } while (__len--);
+  }
+  return npos;
+}
+
+
+namespace PMR {
 template <typename _CharT, typename _Traits = std::char_traits<_CharT>>
 using MyBasicString = MyTypes::MyBasicString<
                         _CharT, _Traits,

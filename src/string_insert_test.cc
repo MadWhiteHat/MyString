@@ -9,7 +9,7 @@
 #include "my_exception.h"
 
 template <typename _Tuple>
-class OperationsTests : public TestingHelper::StringTestingBase<_Tuple> {};
+class InsertTests : public TestingHelper::StringTestingBase<_Tuple> {};
 
 using MyParamTypes = testing::Types<
 // For types defined in standards after C++17
@@ -18,16 +18,16 @@ using MyParamTypes = testing::Types<
 #endif
   std::tuple<char>,
   std::tuple<char16_t>,
-   std::tuple<char32_t>,
+  std::tuple<char32_t>,
   std::tuple<wchar_t>,
   std::tuple<char, std::char_traits<char>>,
   std::tuple<char, std::char_traits<char>,
-    std::pmr::polymorphic_allocator<char>>
+  std::pmr::polymorphic_allocator<char>>
 >;
 
-TYPED_TEST_SUITE(OperationsTests, MyParamTypes);
+TYPED_TEST_SUITE(InsertTests, MyParamTypes);
 
-TYPED_TEST(OperationsTests, ReserveInLocal) {
+TYPED_TEST(InsertTests, ReserveInLocal) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -49,7 +49,7 @@ TYPED_TEST(OperationsTests, ReserveInLocal) {
     __str.length());
 }
 
-TYPED_TEST(OperationsTests, ReserveLocalToDynamic) {
+TYPED_TEST(InsertTests, ReserveLocalToDynamic) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -73,7 +73,7 @@ TYPED_TEST(OperationsTests, ReserveLocalToDynamic) {
     __str.length());
 }
 
-TYPED_TEST(OperationsTests, ReserveDynamicToDynamic) {
+TYPED_TEST(InsertTests, ReserveDynamicToDynamic) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -96,7 +96,7 @@ TYPED_TEST(OperationsTests, ReserveDynamicToDynamic) {
 }
 
 #if __cplusplus <= 201703L
-TYPED_TEST(OperationsTests, ReserveAsShrinkToFit) {
+TYPED_TEST(InsertTests, ReserveAsShrinkToFit) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -117,7 +117,7 @@ TYPED_TEST(OperationsTests, ReserveAsShrinkToFit) {
 }
 #endif
 
-TYPED_TEST(OperationsTests, ShrinkToFitLocal) {
+TYPED_TEST(InsertTests, ShrinkToFitLocal) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -140,7 +140,7 @@ TYPED_TEST(OperationsTests, ShrinkToFitLocal) {
     __str.length());
 }
 
-TYPED_TEST(OperationsTests, ShrinkToFitDynamic) {
+TYPED_TEST(InsertTests, ShrinkToFitDynamic) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -159,7 +159,7 @@ TYPED_TEST(OperationsTests, ShrinkToFitDynamic) {
     __ilist.size());
 }
 
-TYPED_TEST(OperationsTests, ClearLocal) {
+TYPED_TEST(InsertTests, ClearLocal) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -178,7 +178,7 @@ TYPED_TEST(OperationsTests, ClearLocal) {
   EXPECT_EQ(__str.capacity(), __prevCap);
 }
 
-TYPED_TEST(OperationsTests, ClearDynamic) {
+TYPED_TEST(InsertTests, ClearDynamic) {
   //Arrange
   const auto __ilist = TestFixture::_str1;
 
@@ -196,7 +196,7 @@ TYPED_TEST(OperationsTests, ClearDynamic) {
   EXPECT_EQ(__str.capacity(), __prevCap);
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosLocalBegin) {
+TYPED_TEST(InsertTests, CharPosLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -221,7 +221,7 @@ TYPED_TEST(OperationsTests, InsertCharPosLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosLocalMid) {
+TYPED_TEST(InsertTests, CharPosLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -248,7 +248,7 @@ TYPED_TEST(OperationsTests, InsertCharPosLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosLocalEnd) {
+TYPED_TEST(InsertTests, CharPosLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -273,7 +273,7 @@ TYPED_TEST(OperationsTests, InsertCharPosLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, CharPosLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -299,7 +299,7 @@ TYPED_TEST(OperationsTests, InsertCharPosLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosLocalToDynamicMid) {
+TYPED_TEST(InsertTests, CharPosLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -327,7 +327,7 @@ TYPED_TEST(OperationsTests, InsertCharPosLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, CharPosLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -353,7 +353,7 @@ TYPED_TEST(OperationsTests, InsertCharPosLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, CharPosDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -377,7 +377,7 @@ TYPED_TEST(OperationsTests, InsertCharPosDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, CharPosDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -403,7 +403,7 @@ TYPED_TEST(OperationsTests, InsertCharPosDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, CharPosDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -428,7 +428,7 @@ TYPED_TEST(OperationsTests, InsertCharPosDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosOut) {
+TYPED_TEST(InsertTests, CharPosOut) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -458,7 +458,7 @@ TYPED_TEST(OperationsTests, InsertCharPosOut) {
     __ilist.size());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountLocalBegin) {
+TYPED_TEST(InsertTests, CharPosCountLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -484,7 +484,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountLocalMid) {
+TYPED_TEST(InsertTests, CharPosCountLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -512,7 +512,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountLocalEnd) {
+TYPED_TEST(InsertTests, CharPosCountLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -538,7 +538,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, CharPosCountLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -567,7 +567,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountLocalToDynamicMid) {
+TYPED_TEST(InsertTests, CharPosCountLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -598,7 +598,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, CharPosCountLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -627,7 +627,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, CharPosCountDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -654,7 +654,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, CharPosCountDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -682,7 +682,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosCountDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, CharPosCountDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -708,7 +708,7 @@ TYPED_TEST(OperationsTests, InsertCharPosCountDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharPosOutCount) {
+TYPED_TEST(InsertTests, CharPosOutCount) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -740,7 +740,7 @@ TYPED_TEST(OperationsTests, InsertCharPosOutCount) {
     __ilist.size());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosLocalBegin) {
+TYPED_TEST(InsertTests, CStrPosLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -767,7 +767,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosLocalMid) {
+TYPED_TEST(InsertTests, CStrPosLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -796,7 +796,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosLocalEnd) {
+TYPED_TEST(InsertTests, CStrPosLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -823,7 +823,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, CStrPosLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -849,7 +849,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosLocalToDynamicMid) {
+TYPED_TEST(InsertTests, CStrPosLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -877,7 +877,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, CStrPosLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -903,7 +903,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, CStrPosDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -928,7 +928,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, CStrPosDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -955,7 +955,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, CStrPosDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -980,7 +980,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosOut) {
+TYPED_TEST(InsertTests, CStrPosOut) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1012,7 +1012,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosOut) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountLocalBegin) {
+TYPED_TEST(InsertTests, CStrPosCountLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1039,7 +1039,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountLocalMid) {
+TYPED_TEST(InsertTests, CStrPosCountLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1068,7 +1068,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountLocalEnd) {
+TYPED_TEST(InsertTests, CStrPosCountLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1095,7 +1095,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, CStrPosCountLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1125,7 +1125,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountLocalToDynamicMid) {
+TYPED_TEST(InsertTests, CStrPosCountLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1157,7 +1157,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, CStrPosCountLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1187,7 +1187,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, CStrPosCountDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1215,7 +1215,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, CStrPosCountDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1245,7 +1245,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, CStrPosCountDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1273,7 +1273,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCStrPosCountOut) {
+TYPED_TEST(InsertTests, CStrPosCountOut) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1308,7 +1308,7 @@ TYPED_TEST(OperationsTests, InsertCStrPosCountOut) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosLocalBegin) {
+TYPED_TEST(InsertTests, STLStringPosLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1335,7 +1335,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosLocalMid) {
+TYPED_TEST(InsertTests, STLStringPosLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1364,7 +1364,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosLocalEnd) {
+TYPED_TEST(InsertTests, STLStringPosLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1391,7 +1391,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, STLStringPosLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1418,7 +1418,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosLocalToDynamicMid) {
+TYPED_TEST(InsertTests, STLStringPosLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1447,7 +1447,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, STLStringPosLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1474,7 +1474,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, STLStringPosDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1499,7 +1499,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, STLStringPosDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1526,7 +1526,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, STLStringPosDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1551,7 +1551,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosOut) {
+TYPED_TEST(InsertTests, STLStringPosOut) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1583,7 +1583,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosOut) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosLocalBegin) {
+TYPED_TEST(InsertTests, MyStringPosLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1610,7 +1610,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosLocalMid) {
+TYPED_TEST(InsertTests, MyStringPosLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1639,7 +1639,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosLocalEnd) {
+TYPED_TEST(InsertTests, MyStringPosLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1666,7 +1666,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, MyStringPosLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1693,7 +1693,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosLocalToDynamicMid) {
+TYPED_TEST(InsertTests, MyStringPosLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1722,7 +1722,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, MyStringPosLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1749,7 +1749,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, MyStringPosDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1774,7 +1774,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, MyStringPosDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1801,7 +1801,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, MyStringPosDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1826,7 +1826,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosOut) {
+TYPED_TEST(InsertTests, MyStringPosOut) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1858,7 +1858,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosOut) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalBegin) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1888,7 +1888,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalMid) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1920,7 +1920,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalEnd) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1950,7 +1950,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -1981,7 +1981,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalToDynamicMid) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2014,7 +2014,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2045,8 +2045,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountDynamicToDynamicBegin)
-{
+TYPED_TEST(InsertTests, STLStringPosStrPosCountDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2075,7 +2074,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountDynamicToDynamicBegin)
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2106,7 +2105,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, STLStringPosStrPosCountDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2135,7 +2134,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosCountDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosOutStrPosCount) {
+TYPED_TEST(InsertTests, STLStringPosOutStrPosCount) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2169,7 +2168,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosOutStrPosCount) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosOutCount) {
+TYPED_TEST(InsertTests, STLStringPosStrPosOutCount) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2203,7 +2202,7 @@ TYPED_TEST(OperationsTests, InsertSTLStringPosStrPosOutCount) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalBegin) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2234,7 +2233,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalMid) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2267,7 +2266,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalEnd) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2298,7 +2297,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2330,7 +2329,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalToDynamicMid) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2364,7 +2363,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2396,7 +2395,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2426,7 +2425,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2458,7 +2457,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, MyStringPosStrPosCountDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2488,7 +2487,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosCountDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosOutStrPosCount) {
+TYPED_TEST(InsertTests, MyStringPosOutStrPosCount) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2522,7 +2521,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosOutStrPosCount) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertMyStringPosStrPosOutCount) {
+TYPED_TEST(InsertTests, MyStringPosStrPosOutCount) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2556,7 +2555,7 @@ TYPED_TEST(OperationsTests, InsertMyStringPosStrPosOutCount) {
     __ilist1.size());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterLocalBegin) {
+TYPED_TEST(InsertTests, CharIterLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2583,7 +2582,7 @@ TYPED_TEST(OperationsTests, InsertCharIterLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterLocalMid) {
+TYPED_TEST(InsertTests, CharIterLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2613,7 +2612,7 @@ TYPED_TEST(OperationsTests, InsertCharIterLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterLocalEnd) {
+TYPED_TEST(InsertTests, CharIterLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2640,7 +2639,7 @@ TYPED_TEST(OperationsTests, InsertCharIterLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, CharIterLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2668,7 +2667,7 @@ TYPED_TEST(OperationsTests, InsertCharIterLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterLocalToDynamicMid) {
+TYPED_TEST(InsertTests, CharIterLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2699,7 +2698,7 @@ TYPED_TEST(OperationsTests, InsertCharIterLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, CharIterLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2727,7 +2726,7 @@ TYPED_TEST(OperationsTests, InsertCharIterLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, CharIterDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2753,7 +2752,7 @@ TYPED_TEST(OperationsTests, InsertCharIterDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, CharIterDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2782,7 +2781,7 @@ TYPED_TEST(OperationsTests, InsertCharIterDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, CharIterDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2808,7 +2807,7 @@ TYPED_TEST(OperationsTests, InsertCharIterDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountLocalBegin) {
+TYPED_TEST(InsertTests, CharIterCountLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2836,7 +2835,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountLocalMid) {
+TYPED_TEST(InsertTests, CharIterCountLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2867,7 +2866,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountLocalEnd) {
+TYPED_TEST(InsertTests, CharIterCountLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2895,7 +2894,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, CharIterCountLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2926,7 +2925,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountLocalToDynamicMid) {
+TYPED_TEST(InsertTests, CharIterCountLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2960,7 +2959,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, CharIterCountLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -2991,7 +2990,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, CharIterCountDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3020,7 +3019,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, CharIterCountDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3051,7 +3050,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertCharIterCountDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, CharIterCountDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3079,7 +3078,7 @@ TYPED_TEST(OperationsTests, InsertCharIterCountDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterLocalBegin) {
+TYPED_TEST(InsertTests, ItersRangeIterLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3110,7 +3109,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterLocalMid) {
+TYPED_TEST(InsertTests, ItersRangeIterLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3145,7 +3144,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterLocalEnd) {
+TYPED_TEST(InsertTests, ItersRangeIterLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3174,7 +3173,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, ItersRangeIterLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3204,7 +3203,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterLocalToDynamicMid) {
+TYPED_TEST(InsertTests, ItersRangeIterLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3237,7 +3236,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, ItersRangeIterLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3266,7 +3265,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, ItersRangeIterDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3293,7 +3292,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, ItersRangeIterDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3324,7 +3323,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, ItersRangeIterDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3351,7 +3350,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertItersRangeIterFirstEqLast) {
+TYPED_TEST(InsertTests, ItersRangeIterFirstEqLast) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3378,7 +3377,7 @@ TYPED_TEST(OperationsTests, InsertItersRangeIterFirstEqLast) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterLocalBegin) {
+TYPED_TEST(InsertTests, ListIterLocalBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3404,7 +3403,7 @@ TYPED_TEST(OperationsTests, InsertListIterLocalBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterLocalMid) {
+TYPED_TEST(InsertTests, ListIterLocalMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3434,7 +3433,7 @@ TYPED_TEST(OperationsTests, InsertListIterLocalMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterLocalEnd) {
+TYPED_TEST(InsertTests, ListIterLocalEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3460,7 +3459,7 @@ TYPED_TEST(OperationsTests, InsertListIterLocalEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterLocalToDynamicBegin) {
+TYPED_TEST(InsertTests, ListIterLocalToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3487,7 +3486,7 @@ TYPED_TEST(OperationsTests, InsertListIterLocalToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterLocalToDynamicMid) {
+TYPED_TEST(InsertTests, ListIterLocalToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3518,7 +3517,7 @@ TYPED_TEST(OperationsTests, InsertListIterLocalToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterLocalToDynamicEnd) {
+TYPED_TEST(InsertTests, ListIterLocalToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3545,7 +3544,7 @@ TYPED_TEST(OperationsTests, InsertListIterLocalToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterDynamicToDynamicBegin) {
+TYPED_TEST(InsertTests, ListIterDynamicToDynamicBegin) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3570,7 +3569,7 @@ TYPED_TEST(OperationsTests, InsertListIterDynamicToDynamicBegin) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterDynamicToDynamicMid) {
+TYPED_TEST(InsertTests, ListIterDynamicToDynamicMid) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3599,7 +3598,7 @@ TYPED_TEST(OperationsTests, InsertListIterDynamicToDynamicMid) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterDynamicToDynamicEnd) {
+TYPED_TEST(InsertTests, ListIterDynamicToDynamicEnd) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3624,7 +3623,7 @@ TYPED_TEST(OperationsTests, InsertListIterDynamicToDynamicEnd) {
     __cmp.length());
 }
 
-TYPED_TEST(OperationsTests, InsertListIterFirstEqLast) {
+TYPED_TEST(InsertTests, ListIterFirstEqLast) {
   //Arrange
   using value_type = typename  TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
@@ -3645,716 +3644,6 @@ TYPED_TEST(OperationsTests, InsertListIterFirstEqLast) {
   //Assert
   EXPECT_EQ(__diffStr, __diffCmp);
   EXPECT_GT(__str.capacity(), __cmp.length());
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountNone) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist1 = TestFixture::_str1;
-  const auto __ilist2 = TestFixture::_str2;
-
-  typename TestFixture::MyTestingString __str(__ilist1.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __pos = 0;
-  const size_type __count = 0;
-
-  std::basic_string<value_type> __cmp(__ilist1.begin(),
-    TestFixture::_localBufferLenThreshold);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountLocalBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __pos = 0;
-  size_type __count = 1;
-  ADJUST_OUT(1, __count);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountLocalMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  size_type __pos = __str.length() / 2;
-  ADJUST_OUT(1, __pos);
-  ADJUST_IN(__str.length() - 2, __pos);
-  size_type __count = 1;
-  ADJUST_OUT(1, __count);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountLocalEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __pos = __str.length() - 1;
-  size_type __count = 1;
-  ADJUST_OUT(1, __count);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountDynamicBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin());
-  
-  auto __prevCap = __str.capacity();
-
-  const size_type __pos = 0;
-  size_type __count = __str.length() / 2; 
-  ADJUST_OUT(1, __count);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountDynamicMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevCap = __str.capacity();
-
-  size_type __pos = __str.length() / 2;
-  ADJUST_OUT(1, __pos);
-  ADJUST_IN(__str.length() - 2, __pos);
-  size_type __count = __str.length() / 2;
-  ADJUST_OUT(1, __count);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCountDynamicEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevCap = __str.capacity();
-
-  const size_type __pos = __str.length() - 1;
-  size_type __count = __str.length() / 2;
-  ADJUST_OUT(1, __count);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  __cmp.erase(__pos, __count);
-
-  //Act
-  __str.erase(__pos, __count);
-
-  //Assert
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, ErasePosCount) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevData = __str.data();
-  auto __prevLen = __str.length();
-  auto __prevCap = __str.capacity();
-
-  const size_type __pos = __str.length() + 1;
-  size_type __count = __str.length() / 2;
-  ADJUST_OUT(1, __count);
-
-  //Act
-
-  //Assert
-  EXPECT_THROW({
-    __str.erase(__pos, __count);
-  }, MyTypes::MyException);
-
-  EXPECT_EQ(__str.data(), __prevData);
-  EXPECT_EQ(__str.length(), __prevLen);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __ilist.begin(),
-    __ilist.size());
-}
-
-TYPED_TEST(OperationsTests, EraseIterLocalBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin());
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin());
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterLocalMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  size_type __shift = __str.length() / 2;
-  ADJUST_OUT(1, __shift);
-  ADJUST_IN(__str.length() - 2, __shift);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift);
-  auto __diffStr = std::distance(__retIterCmp, __cmp.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterLocalEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __shift = __str.length() - 1;
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift);
-  auto __diffStr = std::distance(__retIterCmp, __cmp.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterDynamicToLocalBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold + 1);
-  
-  auto __prevCap = __str.capacity();
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold + 1);
-  auto __retIterCmp = __cmp.erase(__cmp.begin());
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin());
-  auto __diffStr = std::distance(__retIterCmp, __cmp.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterDynamicToLocalMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold + 1);
-
-  auto __prevCap = __str.capacity();
-
-  size_type __shift = __str.length() / 2;
-  ADJUST_OUT(1, __shift);
-  ADJUST_IN(__str.length() - 2, __shift);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold + 1);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterDynamicToLocalEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold + 1);
-
-  auto __prevCap = __str.capacity();
-
-  const size_type __shift = __str.length() - 1;
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold + 1);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterDynamicToDynamicBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-  
-  auto __prevCap = __str.capacity();
-
-  std::basic_string<value_type> __cmp(__ilist);
-  auto __retIterCmp = __cmp.erase(__cmp.begin());
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin());
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterDynamicToDynamicMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevCap = __str.capacity();
-
-  size_type __shift = __str.length() / 2;
-  ADJUST_OUT(1, __shift);
-  ADJUST_IN(__str.length() - 2, __shift);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterDynamicToDynamicEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevCap = __str.capacity();
-
-  const size_type __shift = __str.length() - 1;
-
-  std::basic_string<value_type> __cmp(__ilist);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeNone) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist1 = TestFixture::_str1;
-  const auto __ilist2 = TestFixture::_str2;
-
-  typename TestFixture::MyTestingString __str(__ilist1.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __count = 0;
-
-  std::basic_string<value_type> __cmp(__ilist1.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin(), __cmp.begin() + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin(), __str.begin() + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeLocalBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __shift = 0;
-  size_type __count = 1;
-  ADJUST_OUT(1, __count);
-  ADJUST_IN(__str.length() - __shift, __count);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
-    __shift + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift, __str.begin() +
-    __shift + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeLocalMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  size_type __shift = __str.length() / 2;
-  ADJUST_OUT(1, __shift);
-  ADJUST_IN(__str.length() - 2, __shift);
-  size_type __count = 1;
-  ADJUST_OUT(1, __count);
-  ADJUST_IN(__str.length() - __shift, __count);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
-    __shift + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift, __str.begin() +
-    __shift + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), TestFixture::_localBufferCapThreshold);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeLocalEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-
-  const size_type __shift = __str.length() - 1;
-  size_type __count = 1;
-  ADJUST_OUT(1, __count);
-  ADJUST_IN(__str.length() - __shift, __count);
-
-  std::basic_string<value_type> __cmp(__ilist.begin(),
-    TestFixture::_localBufferLenThreshold);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
-    __shift + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift, __str.begin() +
-    __shift + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeDynamicBegin) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist.begin());
-  
-  auto __prevCap = __str.capacity();
-
-  const size_type __shift = 0;
-  size_type __count = __str.length() / 2; 
-  ADJUST_OUT(1, __count);
-  ADJUST_IN(__str.length() - __shift, __count);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
-    __shift + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift, __str.begin() +
-    __shift + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeDynamicMid) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevCap = __str.capacity();
-
-  size_type __shift = __str.length() / 2;
-  ADJUST_OUT(1, __shift);
-  ADJUST_IN(__str.length() - 2, __shift);
-  size_type __count = __str.length() / 2;
-  ADJUST_OUT(1, __count);
-  ADJUST_IN(__str.length() - __shift, __count);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
-    __shift + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift, __str.begin() +
-    __shift + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);
-  EXPECT_EQ(__str.capacity(), __prevCap);
-  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
-    __cmp.length());
-}
-
-TYPED_TEST(OperationsTests, EraseIterRangeDynamicEnd) {
-  //Arrange
-  using value_type = typename  TestFixture::value_type;
-  using size_type = typename TestFixture::size_type;
-
-  const auto __ilist = TestFixture::_str1;
-
-  typename TestFixture::MyTestingString __str(__ilist);
-
-  auto __prevCap = __str.capacity();
-
-  const size_type __shift = __str.length() - 1;
-  size_type __count = __str.length() / 2;
-  ADJUST_OUT(1, __count);
-  ADJUST_IN(__str.length() - __shift, __count);
-
-  std::basic_string<value_type> __cmp(__ilist);
-  auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
-    __shift + __count);
-  auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
-
-  //Act
-  auto __retIterStr = __str.erase(__str.begin() + __shift, __str.begin() +
-    __shift + __count);
-  auto __diffStr = std::distance(__retIterStr, __str.begin());
-
-  //Assert
-  EXPECT_EQ(__diffStr, __diffCmp);  EXPECT_EQ(__str.capacity(), __prevCap);
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
 }

@@ -23,7 +23,7 @@ using MyParamTypes = testing::Types<
   std::tuple<wchar_t>,
   std::tuple<char, std::char_traits<char>>,
   std::tuple<char, std::char_traits<char>,
-    std::pmr::polymorphic_allocator<char>>
+  std::pmr::polymorphic_allocator<char>>
 >;
 
 
@@ -1473,7 +1473,7 @@ TYPED_TEST(AssignTests, AssignCStrCountDynamicToDynamicWORealloc) {
 
   typename TestFixture::MyTestingString __str(__ilist1);
   const typename TestFixture::MyTestingString __other(__ilist2);
-  
+
   size_type __count = TestFixture::_localBufferLenThreshold + 1;
   ADJUST_IN(__other.length(), __count);
 
@@ -1500,7 +1500,7 @@ TYPED_TEST(AssignTests, AssignCStrCountDynamicToDynamicRealloc) {
 
   typename TestFixture::MyTestingString __str(__ilist1);
   const typename TestFixture::MyTestingString __other(__ilist2);
-  
+
   size_type __count = TestFixture::_localBufferLenThreshold + 1;
   ADJUST_IN(__other.length(), __count);
 

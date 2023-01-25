@@ -24,9 +24,8 @@ using MyParamTypes = testing::Types<
   std::tuple<wchar_t>,
   std::tuple<char, std::char_traits<char>>,
   std::tuple<char, std::char_traits<char>,
-    std::pmr::polymorphic_allocator<char>>
+  std::pmr::polymorphic_allocator<char>>
 >;
-
 
 TYPED_TEST_SUITE(ConstructorsTests, MyParamTypes);
 
@@ -207,7 +206,7 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountOver) {
   using value_type = typename TestFixture::value_type;
   using size_type = typename TestFixture::size_type;
 
-  const auto __ilist = TestFixture::_str1; 
+  const auto __ilist = TestFixture::_str1;
 
   const std::basic_string<value_type> __other(__ilist);
 
@@ -621,7 +620,7 @@ TYPED_TEST(ConstructorsTests, InputIterLocal) {
   const std::basic_string<value_type> __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
-  const std::basic_string<value_type> __cmp(__other.begin(), __other.end()); 
+  const std::basic_string<value_type> __cmp(__other.begin(), __other.end());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other.begin(),

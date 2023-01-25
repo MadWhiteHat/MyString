@@ -18,11 +18,11 @@ using MyParamTypes = testing::Types<
 #endif
   std::tuple<char>,
   std::tuple<char16_t>,
-   std::tuple<char32_t>,
+  std::tuple<char32_t>,
   std::tuple<wchar_t>,
   std::tuple<char, std::char_traits<char>>,
   std::tuple<char, std::char_traits<char>,
-    std::pmr::polymorphic_allocator<char>>
+  std::pmr::polymorphic_allocator<char>>
 >;
 
 TYPED_TEST_SUITE(PropertiesTests, MyParamTypes);
