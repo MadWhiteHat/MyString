@@ -33,6 +33,20 @@
 
 namespace TestingHelper {
 
+using MyParamTypes = testing::Types<
+// For types defined in standards after C++17
+#if __cplusplus > 201703L
+  std::tuple<char8_t>
+#endif
+  std::tuple<char>,
+  std::tuple<char16_t>,
+  std::tuple<char32_t>,
+  std::tuple<wchar_t>,
+  std::tuple<char, std::char_traits<char>>,
+  std::tuple<char, std::char_traits<char>,
+    std::pmr::polymorphic_allocator<char>>
+>;
+
 enum Adjustment { LOCAL, DYNAMIC };
 
 template <typename _Tuple>
@@ -72,7 +86,34 @@ class StringTestingBase : public ::testing::Test {
       MyTypes::MyBasicString<_CharT, _Traits, _Alloc>
     >
   >;
-  
+
+  using STLString = std::conditional_t<
+    std::is_same_v<_Traits, void>,
+    std::basic_string<_CharT>,
+    std::conditional_t<std::is_same_v<_Alloc, void>,
+      std::basic_string<_CharT, _Traits>,
+      std::basic_string<_CharT, _Traits, _Alloc>
+    >
+  >;
+
+  using IStringStream = std::conditional_t<
+    std::is_same_v<_Traits, void>,
+    std::basic_istringstream<_CharT>,
+    std::conditional_t<std::is_same_v<_Alloc, void>,
+      std::basic_istringstream<_CharT, _Traits>,
+      std::basic_istringstream<_CharT, _Traits, _Alloc>
+    >
+  >;
+
+  using OStringStream = std::conditional_t<
+    std::is_same_v<_Traits, void>,
+    std::basic_ostringstream<_CharT>,
+    std::conditional_t<std::is_same_v<_Alloc, void>,
+      std::basic_ostringstream<_CharT, _Traits>,
+      std::basic_ostringstream<_CharT, _Traits, _Alloc>
+    >
+  >;
+
   using value_type = typename MyTestingString::value_type;
   using allocator_type = typename MyTestingString::allocator_type;
   using size_type = typename MyTestingString::size_type;

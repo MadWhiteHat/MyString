@@ -59,12 +59,12 @@ class MyBasicString {
     "Invalid template parameter _CharT." 
     " Valid types: char, wchar_t, char16_t, char32_t"
 #if __cplusplus > 201703L
-     ", char8_t"
+    ", char8_t"
 #endif
   );
 
   static_assert(LOCAL_CAPACITY % 4 == 0,
-                "LOCAL_CAPACITY must be divisible by 4");
+    "LOCAL_CAPACITY must be divisible by 4");
 
   static_assert(std::is_same_v<_CharT, typename _Traits::char_type>);
 
@@ -76,12 +76,12 @@ class MyBasicString {
   using allocator_type = _Alloc;
   using size_type = typename _AllocatorTraits::size_type;
   using difference_type = typename _AllocatorTraits::difference_type;
-  using reference =  value_type&;
-  using const_reference = const value_type&;
+  using reference =  _CharT&;
+  using const_reference = const _CharT&;
   using pointer = typename _AllocatorTraits::pointer;
   using const_pointer = typename _AllocatorTraits::const_pointer;
-  using iterator = _MyIterator<pointer, MyBasicString>;
-  using const_iterator = _MyIterator<const_pointer, MyBasicString>;
+  using iterator = _MyIterator<_CharT*, MyBasicString>;
+  using const_iterator = _MyIterator<const _CharT*, MyBasicString>;
   using reverse_iterator = MyReverseIterator<iterator>;
   using const_reverse_iterator = MyReverseIterator<const_iterator>;
 
@@ -96,52 +96,51 @@ class MyBasicString {
   MyBasicString(const _Alloc& __alloc) noexcept;
   template <typename = __custom_traits::_RequireAllocator<_Alloc>>
   _CXX20_CONSTEXPR
-  MyBasicString(const size_type __count, value_type __ch,
-                const _Alloc& __alloc = _Alloc());
+  MyBasicString(const size_type __count, const _CharT __ch,
+    const _Alloc& __alloc = _Alloc());
   template <typename = __custom_traits::_RequireAllocator<_Alloc>>
   explicit
   _CXX20_CONSTEXPR
-  MyBasicString(value_type __ch, const _Alloc& __alloc = _Alloc());
+  MyBasicString(const _CharT __ch, const _Alloc& __alloc = _Alloc());
   _CXX20_CONSTEXPR
-  MyBasicString(const std::basic_string<value_type>& __other,
-                size_type __pos, const _Alloc& __alloc = _Alloc());
-  _CXX20_CONSTEXPR
-  MyBasicString(const MyBasicString& __other, size_type __pos,
-                const _Alloc& __alloc = _Alloc());
-  _CXX20_CONSTEXPR
-  MyBasicString(const std::basic_string<value_type>& __other, size_type __pos,
-                size_type __count, const _Alloc& __alloc = _Alloc());
+  MyBasicString(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos, const _Alloc& __alloc = _Alloc());
   _CXX20_CONSTEXPR
   MyBasicString(const MyBasicString& __other, size_type __pos,
-                size_type __count, const _Alloc& __alloc = _Alloc());
+    const _Alloc& __alloc = _Alloc());
   _CXX20_CONSTEXPR
-  MyBasicString(const_pointer __cStr, size_type __count,
-                const _Alloc& __alloc = _Alloc());
+  MyBasicString(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos, size_type __count, const _Alloc& __alloc = _Alloc());
   _CXX20_CONSTEXPR
-  MyBasicString(const_pointer __cStr, const _Alloc& __alloc = _Alloc());
+  MyBasicString(const MyBasicString& __other, size_type __pos,
+    size_type __count, const _Alloc& __alloc = _Alloc());
+  _CXX20_CONSTEXPR
+  MyBasicString(const _CharT* __cStr, size_type __count,
+    const _Alloc& __alloc = _Alloc());
+  _CXX20_CONSTEXPR
+  MyBasicString(const _CharT* __cStr, const _Alloc& __alloc = _Alloc());
   template <typename _InputIter,
             typename = __custom_traits::_RequireInputIter<_InputIter> >
   _CXX20_CONSTEXPR
   MyBasicString(_InputIter __first, _InputIter __last,
-                const _Alloc& __alloc = _Alloc());
+    const _Alloc& __alloc = _Alloc());
   _CXX20_CONSTEXPR
-  MyBasicString(const std::basic_string<value_type>& __other);
+  MyBasicString(const std::basic_string<_CharT, _Traits, _Alloc>& __other);
   _CXX20_CONSTEXPR
   MyBasicString(const MyBasicString& __other);
   _CXX20_CONSTEXPR
-  MyBasicString(const std::basic_string<value_type>& __other,
-                const _Alloc& __alloc);
+  MyBasicString(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    const _Alloc& __alloc);
   _CXX20_CONSTEXPR
-  MyBasicString(const MyBasicString& __other,
-                const _Alloc& __alloc);
+  MyBasicString(const MyBasicString& __other, const _Alloc& __alloc);
   _CXX20_CONSTEXPR
   MyBasicString(MyBasicString&& __other) noexcept;
   _CXX20_CONSTEXPR
   MyBasicString(MyBasicString&& __other, const _Alloc& __alloc)
   noexcept(_AllocatorTraits::is_always_equal::value);
   _CXX20_CONSTEXPR
-  MyBasicString(std::initializer_list<value_type> __ilist,
-                const _Alloc& __alloc = _Alloc());
+  MyBasicString(std::initializer_list<_CharT> __ilist,
+    const _Alloc& __alloc = _Alloc());
   _CXX20_CONSTEXPR
   MyBasicString(std::nullptr_t) = delete;
 
@@ -155,7 +154,8 @@ class MyBasicString {
   _CXX20_CONSTEXPR
   MyBasicString& operator=(const MyBasicString& __other);
   _CXX20_CONSTEXPR
-  MyBasicString& operator=(const std::basic_string<value_type>& __other);
+  MyBasicString& operator=(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
 
   _CXX20_CONSTEXPR
   MyBasicString& operator=(MyBasicString&& __other)
@@ -163,13 +163,13 @@ class MyBasicString {
            || _AllocatorTraits::is_always_equal::value);
 
   _CXX20_CONSTEXPR
-  MyBasicString& operator=(const_pointer __cStr);
+  MyBasicString& operator=(const _CharT* __cStr);
 
   _CXX20_CONSTEXPR
-  MyBasicString& operator=(value_type __ch);
+  MyBasicString& operator=(const _CharT __ch);
 
   _CXX20_CONSTEXPR
-  MyBasicString& operator=(std::initializer_list<value_type> __ilist);
+  MyBasicString& operator=(std::initializer_list<_CharT> __ilist);
 
   _CXX20_CONSTEXPR
   MyBasicString& operator=(std::nullptr_t) = delete;
@@ -177,19 +177,21 @@ class MyBasicString {
 //-----------------------------------Assign-----------------------------------//
 
   _CXX20_CONSTEXPR
-  MyBasicString& assign(size_type __count, value_type __ch);
+  MyBasicString& assign(size_type __count, const _CharT __ch);
 
   _CXX20_CONSTEXPR
   MyBasicString& assign(const MyBasicString& __other);
   _CXX20_CONSTEXPR
-  MyBasicString& assign(const std::basic_string<value_type>& __other);
+  MyBasicString& assign(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
 
   _CXX20_CONSTEXPR
   MyBasicString& assign(const MyBasicString& __other, size_type __pos,
-                        size_type __count = npos);
+    size_type __count = npos);
   _CXX20_CONSTEXPR
-   MyBasicString& assign(const std::basic_string<value_type>& __other,
-       size_type __pos, size_type __count = npos);
+   MyBasicString& assign(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos,
+    size_type __count = npos);
 
   _CXX20_CONSTEXPR
   MyBasicString& assign(MyBasicString&& __other) noexcept(
@@ -197,10 +199,10 @@ class MyBasicString {
     || _AllocatorTraits::is_always_equal::value);
 
   _CXX20_CONSTEXPR
-  MyBasicString& assign(const_pointer __cStr, size_type __count);
+  MyBasicString& assign(const _CharT* __cStr, size_type __count);
 
   _CXX20_CONSTEXPR
-  MyBasicString& assign(const_pointer __cStr);
+  MyBasicString& assign(const _CharT* __cStr);
 
   template <typename _InputIter,
             typename = __custom_traits::_RequireInputIter<_InputIter>>
@@ -208,7 +210,7 @@ class MyBasicString {
   MyBasicString& assign(_InputIter __first, _InputIter __last);
 
   _CXX20_CONSTEXPR
-  MyBasicString& assign(std::initializer_list<value_type> __ilist);
+  MyBasicString& assign(std::initializer_list<_CharT> __ilist);
 
 //---------------------------------Allocator----------------------------------//
   _CXX20_CONSTEXPR
@@ -217,24 +219,24 @@ class MyBasicString {
 //-------------------------------Element access-------------------------------//
 
   _CXX20_CONSTEXPR
-  reference at(size_type __pos);
+  _CharT& at(size_type __pos);
   _CXX20_CONSTEXPR
-  const_reference at(size_type __pos) const;
+  const _CharT& at(size_type __pos) const;
 
   _CXX20_CONSTEXPR
-  reference operator[](size_type __pos) noexcept;
+  _CharT& operator[](size_type __pos) noexcept;
   _CXX20_CONSTEXPR
-  const_reference operator[](size_type __pos) const noexcept;
+  const _CharT& operator[](size_type __pos) const noexcept;
 
   _CXX20_CONSTEXPR
-  reference front() noexcept;
+  _CharT& front() noexcept;
   _CXX20_CONSTEXPR
-  const_reference front() const noexcept;
+  const _CharT& front() const noexcept;
 
   _CXX20_CONSTEXPR
-  reference back() noexcept;
+  _CharT& back() noexcept;
   _CXX20_CONSTEXPR
-  const_reference back() const noexcept;
+  const _CharT& back() const noexcept;
 
   _CXX20_CONSTEXPR
   pointer data() noexcept;
@@ -310,37 +312,36 @@ class MyBasicString {
   void clear() noexcept;
 
   _CXX20_CONSTEXPR
-  MyBasicString& insert(size_type __idx, size_type __count, value_type __ch);
+  MyBasicString& insert(size_type __idx, size_type __count, const _CharT __ch);
   _CXX20_CONSTEXPR
-  MyBasicString& insert(size_type __idx, value_type __ch);
+  MyBasicString& insert(size_type __idx, const _CharT __ch);
   _CXX20_CONSTEXPR
-  MyBasicString& insert(size_type __idx, const_pointer __cStr);
+  MyBasicString& insert(size_type __idx, const _CharT* __cStr);
   _CXX20_CONSTEXPR
-  MyBasicString& insert(size_type __idx, const_pointer __cStr,
-                        size_type __count);
+  MyBasicString& insert(size_type __idx, const _CharT* __cStr,
+    size_type __count);
   _CXX20_CONSTEXPR
   MyBasicString& insert(size_type __idx,
-                        const std::basic_string<value_type>& __other);
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
   _CXX20_CONSTEXPR
   MyBasicString& insert(size_type __idx, const MyBasicString& __other);
   _CXX20_CONSTEXPR
   MyBasicString& insert(size_type __idx,
-                        const std::basic_string<value_type>& __other,
-                        size_type __idxStr, size_type __count = npos);
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __idxStr, size_type __count = npos);
   _CXX20_CONSTEXPR
   MyBasicString& insert(size_type __idx, const MyBasicString& __other,
-                        size_type __idxStr, size_type __count = npos);
+    size_type __idxStr, size_type __count = npos);
   _CXX20_CONSTEXPR
-  iterator insert(const_iterator __pos, value_type __ch);
+  iterator insert(const_iterator __pos, const _CharT __ch);
   _CXX20_CONSTEXPR
-  iterator insert(const_iterator __pos, size_type __count, value_type __ch);
+  iterator insert(const_iterator __pos, size_type __count, const _CharT __ch);
   template <typename _InputIter,
             typename = __custom_traits::_RequireInputIter<_InputIter>>
   _CXX20_CONSTEXPR
   iterator insert(const_iterator __pos, _InputIter __beg, _InputIter __end);
   _CXX20_CONSTEXPR
-  iterator insert(const_iterator __pos,
-                  std::initializer_list<value_type> __ilist);
+  iterator insert(const_iterator __pos, std::initializer_list<_CharT> __ilist);
 
   _CXX20_CONSTEXPR
   MyBasicString& erase(size_type __idx = 0, size_type __count = npos);
@@ -350,262 +351,268 @@ class MyBasicString {
   iterator erase(const_iterator __beg, const_iterator __end);
 
   _CXX20_CONSTEXPR
-  void push_back(value_type __ch);
+  void push_back(const _CharT __ch);
 
   _CXX20_CONSTEXPR
   void pop_back();
 
   _CXX20_CONSTEXPR
-  MyBasicString& append(size_type __count, value_type __ch);
+  MyBasicString& append(size_type __count, const _CharT __ch);
   _CXX20_CONSTEXPR
   MyBasicString& append(const MyBasicString& __other);
   _CXX20_CONSTEXPR
-  MyBasicString& append(const std::basic_string<value_type>& __other);
+  MyBasicString& append(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
   _CXX20_CONSTEXPR
   MyBasicString& append(const MyBasicString& __other, size_type __pos,
-                        size_type __count = npos);
+    size_type __count = npos);
   _CXX20_CONSTEXPR
-  MyBasicString& append(const std::basic_string<value_type>& __other,
-                        size_type __pos, size_type __count = npos);
+  MyBasicString& append(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos,
+    size_type __count = npos);
   _CXX20_CONSTEXPR
-  MyBasicString& append(const_pointer __cStr, size_type __count);
+  MyBasicString& append(const _CharT* __cStr, size_type __count);
   _CXX20_CONSTEXPR
-  MyBasicString& append(const_pointer __cStr);
+  MyBasicString& append(const _CharT* __cStr);
   template <typename _InputIter,
             typename = __custom_traits::_RequireInputIter<_InputIter>>
   _CXX20_CONSTEXPR
   MyBasicString& append(_InputIter __beg, _InputIter __end);
   _CXX20_CONSTEXPR
-  MyBasicString& append(std::initializer_list<value_type> __ilist);
+  MyBasicString& append(std::initializer_list<_CharT> __ilist);
 
   _CXX20_CONSTEXPR
   MyBasicString& operator+=(const MyBasicString& __other);
   _CXX20_CONSTEXPR
-  MyBasicString& operator+=(const std::basic_string<value_type>& __other);
+  MyBasicString& operator+=(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
   _CXX20_CONSTEXPR
-  MyBasicString& operator+=(value_type __ch);
+  MyBasicString& operator+=(const _CharT __ch);
   _CXX20_CONSTEXPR
-  MyBasicString& operator+=(const_pointer __cStr);
+  MyBasicString& operator+=(const _CharT* __cStr);
   _CXX20_CONSTEXPR
-  MyBasicString& operator+=(std::initializer_list<value_type> __ilist);
+  MyBasicString& operator+=(std::initializer_list<_CharT> __ilist);
 
   _CXX20_CONSTEXPR
   int32_t compare(const MyBasicString& __other) const noexcept;
   _CXX20_CONSTEXPR
-  int32_t compare(const std::basic_string<value_type> __other) const noexcept;
+  int32_t compare(
+    const std::basic_string<_CharT, _Traits, _Alloc> __other) const noexcept;
   _CXX20_CONSTEXPR
   int32_t compare(size_type __pos1, size_type __count1,
-                  const MyBasicString& __other) const;
+    const MyBasicString& __other) const;
   _CXX20_CONSTEXPR
   int32_t compare(size_type __pos1, size_type __count1,
-                  const std::basic_string<value_type>& __other) const;
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other) const;
   _CXX20_CONSTEXPR
   int32_t compare(size_type __pos1, size_type __count1,
-                  const MyBasicString& __other, size_type __pos2,
-                  size_type __count2 = npos) const;
-  _CXX20_CONSTEXPR
-  int32_t compare(size_type __pos1, size_type __count1,
-                  const std::basic_string<value_type>& __other, size_type __pos2,
-                  size_type __count2 = npos) const;
-  _CXX20_CONSTEXPR
-  int32_t compare(const_pointer __cStr) const;
-  _CXX20_CONSTEXPR
-  int32_t compare(size_type __pos1, size_type __count1, const_pointer __cStr)
+    const MyBasicString& __other, size_type __pos2, size_type __count2 = npos)
   const;
   _CXX20_CONSTEXPR
-  int32_t compare(size_type __pos1, size_type __count1, const_pointer __cStr,
+  int32_t compare(size_type __pos1, size_type __count1,
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos2,
+    size_type __count2 = npos) const;
+  _CXX20_CONSTEXPR
+  int32_t compare(const _CharT* __cStr) const;
+  _CXX20_CONSTEXPR
+  int32_t compare(size_type __pos1, size_type __count1, const _CharT* __cStr)
+  const;
+  _CXX20_CONSTEXPR
+  int32_t compare(size_type __pos1, size_type __count1, const _CharT* __cStr,
                   size_type __count2) const;
 
   _CXX20_CONSTEXPR
-  bool starts_with(value_type __ch) const noexcept;
+  bool starts_with(const _CharT __ch) const noexcept;
   _CXX20_CONSTEXPR
-  bool starts_with(const_pointer __cStr) const;
+  bool starts_with(const _CharT* __cStr) const;
 
   _CXX20_CONSTEXPR
-  bool ends_with(value_type __ch) const noexcept;
+  bool ends_with(const _CharT __ch) const noexcept;
   _CXX20_CONSTEXPR
-  bool ends_with(const_pointer __cStr)const;
+  bool ends_with(const _CharT* __cStr)const;
 
   _CXX20_CONSTEXPR
-  bool contains(value_type __ch) const noexcept;
+  bool contains(const _CharT __ch) const noexcept;
   _CXX20_CONSTEXPR
-  bool contains(const_pointer __cStr) const;
+  bool contains(const _CharT* __cStr) const;
 
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos, size_type __count,
-                         const MyBasicString& __other);
+    const MyBasicString& __other);
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos, size_type __count,
-                         const std::basic_string<value_type>& __other);
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg, const_iterator __end,
-                         const MyBasicString& __other);
+    const MyBasicString& __other);
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg, const_iterator __end,
-                         const std::basic_string<value_type>& __other);
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other);
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos1, size_type __count1,
-                         const MyBasicString& __other, size_type __pos2,
-                         size_type __count2 = npos);
+    const MyBasicString& __other, size_type __pos2, size_type __count2 = npos);
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos1, size_type __count1,
-                         const std::basic_string<value_type>& __other,
-                         size_type __pos2, size_type __count2 = npos);
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos2,
+    size_type __count2 = npos);
   template <typename _InputIter,
             typename = __custom_traits::_RequireInputIter<_InputIter>>
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg1, const_iterator __end1,
-                         _InputIter __beg2, _InputIter __end2);
+    _InputIter __beg2, _InputIter __end2);
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos, size_type __count1,
-                         const_pointer __cStr, size_type __count2);
+    const _CharT* __cStr, size_type __count2);
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg, const_iterator __end,
-                         const_pointer __cStr, size_type __count);
+    const _CharT* __cStr, size_type __count);
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos, size_type __count,
-                         const_pointer __cStr);
+    const _CharT* __cStr);
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg, const_iterator __end,
-                         const_pointer __cStr);
+    const _CharT* __cStr);
   _CXX20_CONSTEXPR
   MyBasicString& replace(size_type __pos, size_type __count1,
-                         size_type __count2, value_type __ch);
+    size_type __count2, const _CharT __ch);
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg, const_iterator __end,
-                         size_type __count, value_type __ch);
+    size_type __count, const _CharT __ch);
   _CXX20_CONSTEXPR
   MyBasicString& replace(const_iterator __beg, const_iterator __end,
-                         std::initializer_list<value_type> __ilist);
+    std::initializer_list<_CharT> __ilist);
 
   _CXX20_CONSTEXPR
   MyBasicString substr(size_type __pos = 0, size_type __count = npos) const;
 
   _CXX20_CONSTEXPR
-  size_type copy(pointer __dest, size_type __count, size_type __pos = 0) const;
+  size_type copy(_CharT* __dest, size_type __count, size_type __pos = 0) const;
 
   _CXX20_CONSTEXPR
   void resize(size_type __count);
   _CXX20_CONSTEXPR
-  void resize(size_type __count, value_type __ch);
+  void resize(size_type __count, const _CharT __ch);
 
   _CXX20_CONSTEXPR
   void swap(MyBasicString& __other) noexcept(
     _AllocatorTraits::propagate_on_container_swap::value
    || _AllocatorTraits::is_always_equal::value);
 
-
-
   _CXX20_CONSTEXPR
   size_type find(const MyBasicString& __other, size_type __pos = 0)
   const noexcept;
   _CXX20_CONSTEXPR
-  size_type find(const std::basic_string<value_type>& __other,
-                 size_type __pos = 0) const noexcept;
+  size_type find(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos = 0) const noexcept;
   _CXX20_CONSTEXPR
-  size_type find(const_pointer __cStr, size_type __pos, size_type __count)
+  size_type find(const _CharT* __cStr, size_type __pos, size_type __count)
   const;
   _CXX20_CONSTEXPR
-  size_type find(const_pointer __cStr, size_type __pos = 0) const;
+  size_type find(const _CharT* __cStr, size_type __pos = 0) const;
   _CXX20_CONSTEXPR
-  size_type find(value_type __ch, size_type __pos = 0) const noexcept;
+  size_type find(const _CharT __ch, size_type __pos = 0) const noexcept;
 
   _CXX20_CONSTEXPR
   size_type rfind(const MyBasicString& __other, size_type __pos = npos)
   const noexcept;
   _CXX20_CONSTEXPR
-  size_type rfind(const std::basic_string<value_type>& __other,
-                  size_type __pos = npos) const noexcept;
+  size_type rfind(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos = npos) const noexcept;
   _CXX20_CONSTEXPR
-  size_type rfind(const_pointer __cStr, size_type __pos, size_type __count)
+  size_type rfind(const _CharT* __cStr, size_type __pos, size_type __count)
   const;
   _CXX20_CONSTEXPR
-  size_type rfind(const_pointer __cStr, size_type __pos = npos) const;
+  size_type rfind(const _CharT* __cStr, size_type __pos = npos) const;
   _CXX20_CONSTEXPR
-  size_type rfind(value_type __ch, size_type __pos = npos) const noexcept;
+  size_type rfind(const _CharT __ch, size_type __pos = npos) const noexcept;
 
   _CXX20_CONSTEXPR
   size_type find_first_of(const MyBasicString& __other, size_type __pos = 0)
   const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_first_of(const std::basic_string<value_type>& __other,
-                          size_type __pos = 0) const noexcept;
+  size_type find_first_of(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos = 0) const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_first_of(const_pointer __cStr, size_type __pos,
-                          size_type __count) const;
+  size_type find_first_of(const _CharT* __cStr, size_type __pos,
+    size_type __count) const;
   _CXX20_CONSTEXPR
-  size_type find_first_of(const_pointer __cStr, size_type __pos = 0) const;
+  size_type find_first_of(const _CharT* __cStr, size_type __pos = 0) const;
   _CXX20_CONSTEXPR
-  size_type find_first_of(value_type __ch, size_type __pos = 0) const noexcept;
+  size_type find_first_of(const _CharT __ch, size_type __pos = 0) const
+  noexcept;
 
   _CXX20_CONSTEXPR
   size_type find_first_not_of(const MyBasicString& __other, size_type __pos = 0)
   const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_first_not_of(const std::basic_string<value_type>& __other,
-                              size_type __pos = 0) const noexcept;
+  size_type find_first_not_of(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos = 0) const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_first_not_of(const_pointer __cStr, size_type __pos,
-                              size_type __count) const;
+  size_type find_first_not_of(const _CharT* __cStr, size_type __pos,
+    size_type __count) const;
   _CXX20_CONSTEXPR
-  size_type find_first_not_of(const_pointer __cStr, size_type __pos = 0) const;
+  size_type find_first_not_of(const _CharT* __cStr, size_type __pos = 0) const;
   _CXX20_CONSTEXPR
-  size_type find_first_not_of(value_type __ch, size_type __pos = 0) const
+  size_type find_first_not_of(const _CharT __ch, size_type __pos = 0) const
   noexcept;
 
   _CXX20_CONSTEXPR
   size_type find_last_of(const MyBasicString& __other, size_type __pos = npos)
   const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_last_of(const std::basic_string<value_type>& __other,
-                         size_type __pos = npos) const noexcept;
+  size_type find_last_of(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos = npos) const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_last_of(const_pointer __cStr, size_type __pos,
-                         size_type __count) const;
+  size_type find_last_of(const _CharT* __cStr, size_type __pos,
+    size_type __count) const;
   _CXX20_CONSTEXPR
-  size_type find_last_of(const_pointer __cStr, size_type __pos = npos) const;
+  size_type find_last_of(const _CharT* __cStr, size_type __pos = npos) const;
   _CXX20_CONSTEXPR
-  size_type find_last_of(value_type __ch, size_type __pos = npos) const
+  size_type find_last_of(const _CharT __ch, size_type __pos = npos) const
   noexcept;
 
   _CXX20_CONSTEXPR
   size_type find_last_not_of(const MyBasicString& __other,
                              size_type __pos = npos) const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_last_not_of(const std::basic_string<value_type>& __other,
-                             size_type __pos = npos) const noexcept;
+  size_type find_last_not_of(
+    const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+    size_type __pos = npos) const noexcept;
   _CXX20_CONSTEXPR
-  size_type find_last_not_of(const_pointer __cStr, size_type __pos,
-                             size_type __count) const;
+  size_type find_last_not_of(const _CharT* __cStr, size_type __pos,
+    size_type __count) const;
   _CXX20_CONSTEXPR
-  size_type find_last_not_of(const_pointer __cStr, size_type __pos = npos)
+  size_type find_last_not_of(const _CharT* __cStr, size_type __pos = npos)
   const;
   _CXX20_CONSTEXPR
-  size_type find_last_not_of(value_type __ch, size_type __pos = npos) const
+  size_type find_last_not_of(const _CharT __ch, size_type __pos = npos) const
   noexcept;
 
  private:
 
   struct _Alloc_hider : allocator_type {
-    _Alloc_hider(pointer __data, const _Alloc& __alloc)
+    _Alloc_hider(_CharT* __data, const _Alloc& __alloc)
       : allocator_type(__alloc), _data(__data) {}
-    _Alloc_hider(pointer __data, _Alloc&& __alloc = _Alloc())
+    _Alloc_hider(_CharT* __data, _Alloc&& __alloc = _Alloc())
       : allocator_type(std::move(__alloc)), _data(__data) {}
 
-    pointer _data;
+    _CharT* _data;
   };
 
-  inline void _Data(pointer __data) noexcept { _dataPlus._data = __data; }
+  inline void _Data(_CharT* __data) noexcept { _dataPlus._data = __data; }
 
   inline void _Length(size_type __len) noexcept { _stringLength = __len; }
 
-  inline pointer _Data() const noexcept { return _dataPlus._data; }
+  inline _CharT* _Data() const noexcept { return _dataPlus._data; }
 
-  inline pointer _LocalData() {
-    return std::pointer_traits<pointer>::pointer_to(*_localData);
+  inline _CharT* _LocalData() {
+    return std::pointer_traits<_CharT*>::pointer_to(*_localData);
   }
 
-  inline const_pointer _LocalData() const noexcept {
+  inline const _CharT* _LocalData() const noexcept {
     return std::pointer_traits<const_pointer>::pointer_to(*_localData);
   }
 
@@ -615,7 +622,7 @@ class MyBasicString {
 
   inline void _SetLength(size_type __len) {
     this->_Length(__len);
-    traits_type::assign(this->_Data()[__len], value_type(0));
+    traits_type::assign(this->_Data()[__len], _CharT(0));
   }
 
   inline bool _IsLocal() const noexcept {
@@ -629,9 +636,10 @@ class MyBasicString {
   template <typename _InputIter>
   void _Construct(_InputIter __beg, _InputIter __end, std::input_iterator_tag) {
     size_type __len = 0;
+
     size_type __capacity = size_type(_localCapacity);
 
-    pointer __p = this->_LocalData();
+    _CharT* __p = this->_LocalData();
 
     while(__beg != __end && __len < __capacity) {
       __p[__len++] = *__beg;
@@ -648,7 +656,7 @@ class MyBasicString {
     while (__beg != __end) {
       if (__len == __capacity + 1) {
         __capacity = __len + 1;
-        pointer __another = this->_Create(__capacity, __len);
+        _CharT* __another = this->_Create(__capacity, __len);
         this->_Copy(__another, this->_Data(), __len);
         this->_Dispose();
         this->_Data(__another);
@@ -664,7 +672,8 @@ class MyBasicString {
 
   template <typename _ForwardIter>
   void _Construct(_ForwardIter __beg, _ForwardIter __end,
-                  std::forward_iterator_tag) {
+    std::forward_iterator_tag) {
+
     size_type __dnew = static_cast<size_type>(std::distance(__beg, __end));
     if (__dnew + 1 > size_type(_localCapacity)) {
       size_type __reqCap = __dnew + 1;
@@ -686,7 +695,7 @@ class MyBasicString {
     this->_SetLength(__dnew);
   }
 
-  void _Construct(size_type __count, value_type __ch) {
+  void _Construct(size_type __count, const _CharT __ch) {
     if (__count >= size_type(_localCapacity)) {
       size_type __reqCap = __count + 1;
       this->_Data(this->_Create(__reqCap, size_type(0)));
@@ -698,7 +707,7 @@ class MyBasicString {
     this->_SetLength(__count);
   }
 
-  pointer _Create(size_type& __cap, size_type __oldCapacity) {
+  _CharT* _Create(size_type& __cap, size_type __oldCapacity) {
     if (__cap > this->max_size()) {
       __ThrowMyExceptionFmt<MyLengthError>("MyBasicString::_Create");
     }
@@ -728,7 +737,7 @@ class MyBasicString {
 
     if (__reqCap > __cap) {
       size_type __newCap = __reqCap;
-      pointer __tmp = this->_Create(__newCap, __cap);
+      _CharT* __tmp = this->_Create(__newCap, __cap);
       this->_Dispose();
       this->_Data(__tmp);
       this->_Capacity(__newCap);
@@ -754,6 +763,7 @@ class MyBasicString {
   static size_type _Check(
     const std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
     size_type __pos, const char* __methodName) {
+
     if (__pos > __other.length()) {
       __ThrowMyExceptionFmt<MyOutOfRange>(
         ("Out of range in %s: __pos (which is %zu) > __other.length()" 
@@ -774,17 +784,18 @@ class MyBasicString {
     return __testoff ? __offset : this->length() - __pos;
   }
 
-  bool _Disjunct(const_pointer __cStr) {
-    return std::less<const_pointer>()(__cStr, this->_Data())
-      || std::less<const_pointer>()(this->_Data() + this->length(), __cStr);
+  bool _Disjunct(const _CharT* __cStr) {
+    return std::less<const _CharT*>()(__cStr, this->_Data())
+      || std::less<const _CharT*>()(this->_Data() + this->length(), __cStr);
   }
 
-  void _Mutate(size_type __pos, size_type __len1, const_pointer __cStr,
-               size_type __len2) {
+  void _Mutate(size_type __pos, size_type __len1, const _CharT* __cStr,
+    size_type __len2) {
+
     const size_type __count = this->length() - __pos - __len1;
 
     size_type __newCap = this->length() + __len2 - __len1 + 1;
-    pointer __another = _Create(__newCap, this->capacity());
+    _CharT* __another = _Create(__newCap, this->capacity());
 
     if (__pos) {
       this->_Copy(__another, _Data(), __pos);
@@ -802,14 +813,15 @@ class MyBasicString {
   }
 
   MyBasicString& _ReplaceAux(size_type __pos1, size_type __count1,
-                             size_type __count2, value_type __ch) {
+    size_type __count2, const _CharT __ch) {
+
     this->_CheckLength(__count1, __count2, "MyBasicString::_ReplaceAux");
   
     const size_type __oldLen = this->length();
     const size_type __newLen = __oldLen + __count2 - __count1;
 
     if (__newLen < this->capacity()) {
-      pointer __inner = this->_Data() + __pos1;
+      _CharT* __inner = this->_Data() + __pos1;
 
       const size_type __replCount = __oldLen - __pos1 - __count1;
       if (__replCount && __count1 != __count2) {
@@ -829,6 +841,7 @@ class MyBasicString {
             typename = __custom_traits::_RequireInputIter<_InputIter> >
   MyBasicString& _Replace(const_iterator __beg1, const_iterator __end1,
     _InputIter __beg2, _InputIter __end2) {
+
     const MyBasicString __str(__beg2, __end2, this->_GetAllocator());
     const size_type __count = __end1 - __beg1;
     return this->_Replace(__beg1 - this->cbegin(), __count, __str._Data(),
@@ -836,14 +849,15 @@ class MyBasicString {
   }
 
   MyBasicString& _Replace(size_type __pos, size_type __len1,
-                          const_pointer __cStr, const size_type __len2) {
+    const _CharT* __cStr, const size_type __len2) {
+
     this->_CheckLength(__len1, __len2, "MyBasicString::_Replace");
 
     const size_type __oldLen = this->length();
     const size_type __newLen = __oldLen + __len2 - __len1;
 
     if(__newLen < this->capacity()) {
-      pointer __inner = this->_Data() + __pos;
+      _CharT* __inner = this->_Data() + __pos;
       const size_type __replCount = __oldLen - __pos - __len1;
       if (this->_Disjunct(__cStr)) {
         if (__replCount && __len1 != __len2) {
@@ -889,9 +903,8 @@ class MyBasicString {
     this->_SetLength(this->length() - __count);
   }
 
-  MyBasicString& _Append(const_pointer __cStr, size_type __count) {
+  MyBasicString& _Append(const _CharT* __cStr, size_type __count) {
     const size_type __length = __count + this->length();
-
     if (__length < this->capacity()) {
       this->_Copy(this->_Data() + this->length(), __cStr, __count);
     } else {
@@ -904,53 +917,56 @@ class MyBasicString {
   template<typename _BasicCharT, typename _BasicTraits, typename _BasicAlloc>
   static size_type _Limit(
     const std::basic_string<_BasicCharT, _BasicTraits, _BasicAlloc>& __other,
-    size_type __pos, size_type __offset) noexcept{
+    size_type __pos, size_type __offset) noexcept {
+
     const bool __testoff = __offset < __other.length() - __pos;
     return __testoff ? __offset : __other.length() - __pos;
   }
 
-  static void _Copy(pointer __dest, const_pointer __src, size_type __count) {
+  static void _Copy(_CharT* __dest, const _CharT* __src, size_type __count) {
     if (__count == 1) { traits_type::assign(*__dest, *__src); }
     else { traits_type::copy(__dest, __src, __count); }
   }
 
-  static void _Move(pointer __dest, const_pointer __src, size_type __count) {
+  static void _Move(_CharT* __dest, const _CharT* __src, size_type __count) {
     if (__count == 1) { traits_type::assign(*__dest, *__src); }
     else { traits_type::move(__dest, __src, __count); }
   }
 
-  static void _Assign(pointer __dest, const_pointer __src, size_type __count) {
+  static void _Assign(_CharT* __dest, const _CharT* __src, size_type __count) {
     if (__count == 1) { traits_type::assign(*__dest, *__src); }
     else { traits_type::assign(__dest, __src, __count); }
   }
 
-  static void _Assign(pointer __dest, size_type __count, value_type __ch) {
+  static void _Assign(_CharT* __dest, size_type __count, const _CharT __ch) {
     if (__count == 1) { traits_type::assign(*__dest, __ch); }
     else { traits_type::assign(__dest, __count, __ch); }
   }
 
   template <typename _Iter>
-  static void _CopyChars(pointer __p, _Iter __beg, _Iter __end) {
+  static void _CopyChars(_CharT* __p, _Iter __beg, _Iter __end) {
     for (; __beg != __end; ++__beg, ++__p) {
       traits_type::assign(*__p, *__beg);
     }
   }
 
-  static void _CopyChars(pointer __p, iterator __it1, iterator __it2) {
+  static void _CopyChars(_CharT* __p, iterator __it1, iterator __it2) {
     _CopyChars(__p, __it1.base(), __it2.base());
   }
 
-  static void _CopyChars(pointer __p, const_iterator __it1,
-                         const_iterator __it2) {
+  static void _CopyChars(_CharT* __p, const_iterator __it1,
+    const_iterator __it2) {
+
     _CopyChars(__p, __it1.base(), __it2.base());
   }
 
-  static void _CopyChars(pointer __p, pointer __beg, pointer __end) {
+  static void _CopyChars(_CharT* __p, pointer __beg, pointer __end) {
     _Copy(__p, __beg, __end - __beg);
   }
 
-  static void _CopyChars(pointer* __p, const_pointer* __beg,
-                         const_pointer* __end) {
+  static void _CopyChars(_CharT* __p, const _CharT* __beg,
+    const _CharT* __end) {
+
     _Copy(__p, __beg, __end - __beg);
   }
 
@@ -965,8 +981,9 @@ class MyBasicString {
     return static_cast<int>(__diff);
   }
 
-  static int _Compare(const_pointer __cStr1, const size_type __len1,
-    const_pointer __cStr2, const size_type __len2) {
+  static int _Compare(const _CharT* __cStr1, const size_type __len1,
+    const _CharT* __cStr2, const size_type __len2) {
+
     const size_type __minLength = std::min(__len1, __len2);
 
     int __res = traits_type::compare(__cStr1, __cStr2, __minLength);
@@ -980,10 +997,10 @@ class MyBasicString {
   _Alloc_hider _dataPlus{this->_LocalData()};
   size_type _stringLength{0};
 
-  enum { _localCapacity = ((LOCAL_CAPACITY - 1)/ sizeof(value_type)) + 1};
+  enum { _localCapacity = ((LOCAL_CAPACITY - 1)/ sizeof(_CharT)) + 1};
 
   union {
-    value_type _localData[_localCapacity] = {0};
+    _CharT _localData[_localCapacity] = {0};
     size_type _allocatedCapacity;
   };
 };
@@ -1009,7 +1026,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 template <typename>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const size_type __count, value_type __ch, const _Alloc& __alloc)
+MyBasicString(const size_type __count, const _CharT __ch, const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
   this->_Construct(__count, __ch);
 }
@@ -1018,31 +1035,33 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 template <typename>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(value_type __ch, const _Alloc& __alloc)
+MyBasicString(const _CharT __ch, const _Alloc& __alloc)
     : MyBasicString(size_type(1), __ch, __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const std::basic_string<value_type>& __other, size_type __pos,
-              const _Alloc& __alloc)
+MyBasicString(
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos,
+  const _Alloc& __alloc)
     : MyBasicString(__other, __pos, npos, __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(const MyBasicString& __other, size_type __pos,
-              const _Alloc& __alloc)
+  const _Alloc& __alloc)
     : MyBasicString(__other, __pos, npos, __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const std::basic_string<value_type>& __other, size_type __pos,
-              size_type __count, const _Alloc& __alloc)
+MyBasicString(
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos,
+  size_type __count, const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
 
-  const_pointer __start = __other.data() +
+  const _CharT* __start = __other.data() +
   this->_Check(__other, __pos, "MyBasicString::MyBasicString");
   this->_Construct(__start, __start + this->_Limit(__other, __pos, __count),
     std::forward_iterator_tag());
@@ -1051,11 +1070,12 @@ MyBasicString(const std::basic_string<value_type>& __other, size_type __pos,
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const MyBasicString& __other, size_type __pos, size_type __count,
-              const _Alloc& __alloc)
+MyBasicString(
+  const MyBasicString& __other, size_type __pos, size_type __count,
+  const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
 
-  const_pointer __start = __other._Data() +
+  const _CharT* __start = __other._Data() +
     __other._Check(__pos, "MyBasicString::MyBasicString");
   this->_Construct(__start, __start + __other._Limit(__pos, __count),
     std::forward_iterator_tag());
@@ -1064,7 +1084,7 @@ MyBasicString(const MyBasicString& __other, size_type __pos, size_type __count,
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const_pointer __cStr, size_type __count, const _Alloc& __alloc)
+MyBasicString(const _CharT* __cStr, size_type __count, const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
   if (__count > 0) {
     if (__cStr != nullptr) {
@@ -1082,7 +1102,7 @@ MyBasicString(const_pointer __cStr, size_type __count, const _Alloc& __alloc)
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const_pointer __cStr, const _Alloc& __alloc)
+MyBasicString(const _CharT* __cStr, const _Alloc& __alloc)
   : MyBasicString(__cStr, __cStr ? traits_type::length(__cStr) : 1, __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1098,33 +1118,34 @@ MyBasicString(_InputIter __first, _InputIter __last, const _Alloc& __alloc)
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const std::basic_string<value_type>& __other)
-    : MyBasicString(__other, size_type(0), __other.size()) {}
+MyBasicString(const std::basic_string<_CharT, _Traits, _Alloc>& __other)
+  : MyBasicString(__other, size_type(0), __other.size()) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(const MyBasicString& __other)
-    : MyBasicString(__other, size_type(0), __other.size()) {}
+  : MyBasicString(__other, size_type(0), __other.size()) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(const std::basic_string<value_type>& __other,
-              const _Alloc& __alloc)
+MyBasicString(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+  const _Alloc& __alloc)
     : MyBasicString(__other, size_type(0), __other.size(), __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(const MyBasicString& __other, const _Alloc& __alloc)
-    : MyBasicString(__other, size_type(0), __other.size(), __alloc) {}
+  : MyBasicString(__other, size_type(0), __other.size(), __alloc) {}
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(MyBasicString&& __other) noexcept
-    : MyBasicString(this->_LocalData(), std::move(__other._GetAllocator())) {
+  : MyBasicString(this->_LocalData(), std::move(__other._GetAllocator())) {
+
   if (__other._IsLocal()) {
     traits_type::copy(_localData, __other._localData, __other.length() + 1);
   } else {
@@ -1142,7 +1163,7 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
 MyBasicString(MyBasicString&& __other, const _Alloc& __alloc)
 noexcept(_AllocatorTraits::is_always_equal::value)
-    : _dataPlus(this->_LocalData(), __alloc) {
+  : _dataPlus(this->_LocalData(), __alloc) {
 
   if (__other._IsLocal()) {
     traits_type::copy(_localData, __other._localData, __other.length() + 1);
@@ -1164,7 +1185,7 @@ noexcept(_AllocatorTraits::is_always_equal::value)
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>::
-MyBasicString(std::initializer_list<value_type> __ilist, const _Alloc& __alloc)
+MyBasicString(std::initializer_list<_CharT> __ilist, const _Alloc& __alloc)
     : _dataPlus(this->_LocalData(), __alloc) {
   this->_Construct(__ilist.begin(), __ilist.end(), std::forward_iterator_tag());
 }
@@ -1191,7 +1212,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator=(const std::basic_string<value_type>& __other) {
+operator=(const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
   return this->assign(__other);
 }
 
@@ -1231,7 +1252,7 @@ noexcept(_AllocatorTraits::propagate_on_container_move_assignment::value
   } else if (_AllocatorTraits::propagate_on_container_move_assignment::value ||
              _AllocatorTraits::is_always_equal::value ||
              this->_GetAllocator() == __other._GetAllocator()) {
-    pointer __data = nullptr;
+    _CharT* __data = nullptr;
     size_type __capacity = _localCapacity;
     if (!this->_IsLocal()) {
       // Can be freed by __other
@@ -1266,7 +1287,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator=(const_pointer __cStr) {
+operator=(const _CharT* __cStr) {
   return this->assign(__cStr);
 }
 
@@ -1274,7 +1295,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator=(value_type __ch) {
+operator=(const _CharT __ch) {
   return this->assign(size_type(1), __ch);
 }
 
@@ -1282,7 +1303,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator=(std::initializer_list<value_type> __ilist) {
+operator=(std::initializer_list<_CharT> __ilist) {
   return this->assign(__ilist.begin(), __ilist.end());
 }
 
@@ -1292,7 +1313,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-assign(size_type __count, value_type __ch) {
+assign(size_type __count, const _CharT __ch) {
  return _ReplaceAux(size_type(0), this->length(), __count, __ch);
 }
 
@@ -1312,7 +1333,7 @@ assign(const MyBasicString& __other) {
       } else {
         const size_type __len = __other.length();
         auto __alloc = __other._GetAllocator();
-        pointer __another = _AllocatorTraits::allocate(__alloc, __len + 1);
+        _CharT* __another = _AllocatorTraits::allocate(__alloc, __len + 1);
         this->_Destroy(_allocatedCapacity);
         this->_Data(__another);
         this->_Capacity(__len + 1);
@@ -1330,9 +1351,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-assign(const std::basic_string<value_type>& __other) {
+assign(const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
   return this->_Replace(size_type(0), this->length(), __other.data(), 
-    _Limit(__other, size_type(0), npos));
+    this->_Limit(__other, size_type(0), npos));
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -1349,8 +1370,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-assign(const std::basic_string<value_type>& __other,
-                      size_type __pos, size_type __count) {
+assign(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+  size_type __pos, size_type __count) {
+
   return this->_Replace(size_type(0), this->length(), __other.data() +  
     this->_Check(__other, __pos, "MyBasicString::assign"),
     this->_Limit(__other, __pos, __count));
@@ -1370,7 +1392,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-assign(const_pointer __cStr, size_type __count) {
+assign(const _CharT* __cStr, size_type __count) {
   return this->_Replace(size_type(0), this->length(), __cStr, __count);
 }
 
@@ -1378,7 +1400,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-assign(const_pointer __cStr) {
+assign(const _CharT* __cStr) {
   return this->_Replace(size_type(0), this->length(), __cStr,
     traits_type::length(__cStr));
 }
@@ -1396,7 +1418,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-assign(std::initializer_list<value_type> __ilist) {
+assign(std::initializer_list<_CharT> __ilist) {
   return this->assign(__ilist.begin(), __ilist.size());
 }
 
@@ -1628,7 +1650,7 @@ reserve(size_type __newCap) {
   // Reallocation is not required
   if (__newCap <= __capacity) { return; }
 
-  pointer __another = _Create(__newCap, __capacity);
+  _CharT* __another = _Create(__newCap, __capacity);
   this->_Copy(__another, _Data(), this->length() + 1);
   this->_Dispose();
   this->_Data(__another);
@@ -1667,7 +1689,7 @@ shrink_to_fit() {
     _Destroy(__capacity);
     _Data(_LocalData());
   } else if (__length < __capacity - 1) {
-    pointer __another =
+    _CharT* __another =
       _AllocatorTraits::allocate(this->_GetAllocator(), __length + 1);
     this->_Copy(__another, _Data(), __length + 1);
     _Dispose();
@@ -1689,7 +1711,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(size_type __idx, size_type __count, value_type __ch) {
+insert(size_type __idx, size_type __count, const _CharT __ch) {
   return this->_ReplaceAux(_Check(__idx, "MyBasicString::insert"), size_type(0),
     __count, __ch);
 }
@@ -1698,7 +1720,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(size_type __idx, value_type __ch) {
+insert(size_type __idx, const _CharT __ch) {
   return this->insert(__idx, size_type(1), __ch);
 }
 
@@ -1706,7 +1728,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(size_type __idx, const_pointer __cStr) {
+insert(size_type __idx, const _CharT* __cStr) {
   return this->replace(__idx, size_type(0), __cStr,
     traits_type::length(__cStr));
 }
@@ -1715,7 +1737,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(size_type __idx, const_pointer __cStr, size_type __count) {
+insert(size_type __idx, const _CharT* __cStr, size_type __count) {
   return this->replace(__idx, size_type(0), __cStr, __count);
 }
 
@@ -1723,7 +1745,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(size_type __idx, const std::basic_string<value_type>& __other) {
+insert(size_type __idx,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
+
   return this->replace(__idx, size_type(0), __other.data(), __other.length());
 }
 
@@ -1739,8 +1763,10 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(size_type __idx, const std::basic_string<value_type>& __other,
-       size_type __idxStr, size_type __count) {
+insert(size_type __idx,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __idxStr,
+  size_type __count) {
+
   return this->replace(__idx, size_type(0), __other.data() + 
     this->_Check(__other,__idxStr, "MyBasicString::insert"),
     this->_Limit(__other, __idxStr, __count));
@@ -1751,7 +1777,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 insert(size_type __idx, const MyBasicString& __other, size_type __idxStr,
-       size_type __count) {
+  size_type __count) {
+
   return this->replace(__idx, size_type(0), __other._Data() + 
     __other._Check(__idxStr, "MyBasicString::insert"),
     __other._Limit(__idxStr, __count));
@@ -1761,7 +1788,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::iterator
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(const_iterator __pos, value_type __ch) {
+insert(const_iterator __pos, const _CharT __ch) {
   return this->insert(__pos, size_type(1), __ch);
 }
 
@@ -1769,7 +1796,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::iterator
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(const_iterator __pos, size_type __count, value_type __ch) {
+insert(const_iterator __pos, size_type __count, const _CharT __ch) {
   const size_type __position = __pos - this->begin();
   this->replace(__pos, __pos, __count, __ch);
   return iterator(this->_Data() + __position);
@@ -1790,7 +1817,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::iterator
 MyBasicString<_CharT, _Traits, _Alloc>::
-insert(const_iterator __pos, std::initializer_list<value_type> __ilist) {
+insert(const_iterator __pos, std::initializer_list<_CharT> __ilist) {
   return this->insert(__pos, __ilist.begin(), __ilist.end());
 }
 
@@ -1836,7 +1863,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 void
 MyBasicString<_CharT, _Traits, _Alloc>::
-push_back(value_type __ch) { this->append(size_type(1), __ch); }
+push_back(_CharT __ch) { this->append(size_type(1), __ch); }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
@@ -1848,7 +1875,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-append(size_type __count, value_type __ch) {
+append(size_type __count, const _CharT __ch) {
   return this->_ReplaceAux(this->length(), size_type(0), __count, __ch);
 }
 
@@ -1864,7 +1891,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-append(const std::basic_string<value_type>& __other) {
+append(const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
   return this->append(__other.data(), __other.length());
 }
 
@@ -1882,8 +1909,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-append(const std::basic_string<value_type>& __other, size_type __pos,
-       size_type __count) {
+append(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+  size_type __pos, size_type __count) {
+
   return this->append(__other.data() +
     this->_Check(__other, __pos, "MyBasicString::append"),
     this->_Limit(__other, __pos, __count));
@@ -1893,7 +1921,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-append(const_pointer __cStr, size_type __count) {
+append(const _CharT* __cStr, size_type __count) {
   this->_CheckLength(size_type(0), __count, "MyBasicString::append");
   return this->_Append(__cStr, __count);
 }
@@ -1902,7 +1930,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-append(const_pointer __cStr) {
+append(const _CharT* __cStr) {
   this->_CheckLength(size_type(0), traits_type::length(__cStr),
     "MyBasicString::append");
   return this->_Append(__cStr, traits_type::length(__cStr));
@@ -1921,7 +1949,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-append(std::initializer_list<value_type> __ilist) {
+append(std::initializer_list<_CharT> __ilist) {
   return this->append(__ilist.begin(), __ilist.end());
 }
 
@@ -1937,7 +1965,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator+=(const std::basic_string<value_type>& __other) {
+operator+=(const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
   return this->append(__other.data(), __other.length());
 }
 
@@ -1945,7 +1973,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator+=(value_type __ch) {
+operator+=(const _CharT __ch) {
   return this->append(size_type(1), __ch);
 }
 
@@ -1953,7 +1981,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator+=(const_pointer __cStr) {
+operator+=(const _CharT* __cStr) {
   return this->append(__cStr, traits_type::length(__cStr));
 }
 
@@ -1961,7 +1989,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-operator+=(std::initializer_list<value_type> __ilist) {
+operator+=(std::initializer_list<_CharT> __ilist) {
   return this->append(__ilist.begin(), __ilist.end());
 }
 
@@ -1978,7 +2006,8 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
-compare(const std::basic_string<value_type> __other) const noexcept {
+compare(const std::basic_string<_CharT, _Traits, _Alloc> __other) const noexcept
+{
   return this->_Compare(this->_Data(), this->length(), __other.data(),
     __other.length());
 }
@@ -1997,7 +2026,8 @@ _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
 compare(size_type __pos1, size_type __count1,
-        const std::basic_string<value_type>& __other) const {
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other) const {
+
   return this->compare(__pos1, __count1, __other, size_type(0), npos);
 }
 
@@ -2006,7 +2036,8 @@ _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
 compare(size_type __pos1, size_type __count1, const MyBasicString& __other,
-        size_type __pos2, size_type __count2) const {
+  size_type __pos2, size_type __count2) const {
+
   return this->_Compare(
     this->_Data() + this->_Check(__pos1, "MyBasicString::compare"),
     _Limit(__pos1, __count1), __other._Data() +
@@ -2019,8 +2050,9 @@ _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
 compare(size_type __pos1, size_type __count1,
-         const std::basic_string<value_type>& __other, size_type __pos2,
-         size_type __count2) const {
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos2,
+  size_type __count2) const {
+
   return this->_Compare(
     this->_Data() + this->_Check(__pos1, "MyBasicString::compare"),
     this->_Limit(__pos1, __count1), __other.data() +
@@ -2032,7 +2064,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
-compare(const_pointer __cStr) const {
+compare(const _CharT* __cStr) const {
   return this->_Compare(this->_Data(), this->length(), __cStr,
     traits_type::length(__cStr));
 }
@@ -2041,7 +2073,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
-compare(size_type __pos1, size_type __count1, const_pointer __cStr) const {
+compare(size_type __pos1, size_type __count1, const _CharT* __cStr) const {
   return this->_Compare(
     this->_Data() + this->_Check(__pos1, "MyBasicString::compare"),
     this->_Limit(__pos1, __count1), __cStr, traits_type::length(__cStr));
@@ -2051,8 +2083,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 int32_t
 MyBasicString<_CharT, _Traits, _Alloc>::
-compare(size_type __pos1, size_type __count1, const_pointer __cStr,
-                size_type __count2) const {
+compare(size_type __pos1, size_type __count1, const _CharT* __cStr,
+  size_type __count2) const {
+
   return this->_Compare(
     this->_Data() + this->_Check(__pos1, "MyBasicString::compare"),
     this->_Limit(__pos1, __count1), __cStr, __count2);
@@ -2062,7 +2095,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
-starts_with(value_type __ch) const noexcept {
+starts_with(const _CharT __ch) const noexcept {
   return (!this->empty() && this->front() == __ch);
 }
 
@@ -2070,7 +2103,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
-starts_with(const_pointer __cStr) const {
+starts_with(const _CharT* __cStr) const {
   size_type __len = std::min(this->length(), traits_type::length(__cStr));
   return this->_Compare(this->_Data(), __len, __cStr,
     traits_type::length(__cStr)) == 0;
@@ -2080,7 +2113,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
-ends_with(value_type __ch) const noexcept {
+ends_with(const _CharT __ch) const noexcept {
   return !this->empty() && this->back() == __ch;
 }
 
@@ -2088,7 +2121,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
-ends_with(const_pointer __cStr)const {
+ends_with(const _CharT* __cStr)const {
   if (this->length() < traits_type::length(__cStr)) { return false; }
   const size_type __length = traits_type::length(__cStr);
   const size_type __offset = this->length() - __length;
@@ -2100,7 +2133,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
-contains(value_type __ch) const noexcept {
+contains(const _CharT __ch) const noexcept {
   return this->find(__ch) != npos;
 }
 
@@ -2108,7 +2141,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 MyBasicString<_CharT, _Traits, _Alloc>::
-contains(const_pointer __cStr) const {
+contains(const _CharT* __cStr) const {
   return this->find(__cStr) != npos;
 }
 
@@ -2126,7 +2159,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(size_type __pos, size_type __count,
-        const std::basic_string<value_type>& __other) {
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
+
   return this->_Replace(this->_Check(__pos, "MyBasicString::replace"),
     this->_Limit(__pos, __count), __other.data(), __other.length());
 }
@@ -2136,7 +2170,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end,
-        const MyBasicString& __other) {
+  const MyBasicString& __other) {
+
   return this->replace(__beg, __end, __other.data(), __other.length());
 }
 
@@ -2145,7 +2180,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end,
-        const std::basic_string<value_type>& __other) {
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other) {
+
   return this->replace(__beg, __end, __other.data(), __other.length());
 }
 
@@ -2154,7 +2190,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(size_type __pos1, size_type __count1, const MyBasicString& __other,
-        size_type __pos2, size_type __count2) {
+  size_type __pos2, size_type __count2) {
+
   return this->_Replace(this->_Check(__pos1, "MyBasicString::replace"),
     this->_Limit(__pos1, __count1),
     __other._Data() + __other._Check(__pos2, "MyBasicString::replace"),
@@ -2166,8 +2203,9 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(size_type __pos1, size_type __count1,
-        const std::basic_string<value_type>& __other, size_type __pos2,
-        size_type __count2) {
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos2,
+  size_type __count2) {
+
   return this->_Replace(this->_Check(__pos1, "MyBasicString::replace"),
     this->_Limit(__pos1, __count1),
     __other.data() + this->_Check(__other, __pos2, "MyBasicString::replace"),
@@ -2180,7 +2218,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg1, const_iterator __end1, _InputIter __beg2,
-        _InputIter __end2) {
+  _InputIter __end2) {
+
   return this->_Replace(__beg1, __end1, __beg2, __end2);
 }
 
@@ -2188,8 +2227,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-replace(size_type __pos, size_type __count1, const_pointer __cStr,
-        size_type __count2) {
+replace(size_type __pos, size_type __count1, const _CharT* __cStr,
+  size_type __count2) {
+
   this->_Check(__pos, "MyBasicString::replace");
   return this->_Replace(__pos, __count1, __cStr, __count2);
 }
@@ -2198,8 +2238,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-replace(const_iterator __beg, const_iterator __end, const_pointer __cStr,
-    size_type __count) {
+replace(const_iterator __beg, const_iterator __end, const _CharT* __cStr,
+  size_type __count) {
+
   return this->replace(__beg - this->cbegin(), __end - __beg, __cStr, __count);
 }
 
@@ -2207,7 +2248,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-replace(size_type __pos, size_type __count, const_pointer __cStr) {
+replace(size_type __pos, size_type __count, const _CharT* __cStr) {
   this->_Check(__pos, "MyBasicString::replace");
   return this->_Replace(__pos, __count, __cStr, traits_type::length(__cStr));
 }
@@ -2216,7 +2257,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
-replace(const_iterator __beg, const_iterator __end, const_pointer __cStr) {
+replace(const_iterator __beg, const_iterator __end, const _CharT* __cStr) {
   return this->replace(__beg, __end, __cStr, traits_type::length(__cStr));
 }
 
@@ -2225,7 +2266,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(size_type __pos, size_type __count1, size_type __count2,
-    value_type __ch) {
+  const _CharT __ch) {
+
   this->_Check(__pos, "MyBasicString::replace");
   return this->_ReplaceAux(__pos, __count1, __count2, __ch);
 }
@@ -2235,9 +2277,9 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end, size_type __count,
-    value_type __ch) {
-  return this->replace(__beg - this->cbegin(), __end - __beg, __count,
-      __ch);
+  const _CharT __ch) {
+
+  return this->replace(__beg - this->cbegin(), __end - __beg, __count, __ch);
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
@@ -2245,7 +2287,8 @@ _CXX20_CONSTEXPR
 MyBasicString<_CharT, _Traits, _Alloc>&
 MyBasicString<_CharT, _Traits, _Alloc>::
 replace(const_iterator __beg, const_iterator __end,
-        std::initializer_list<value_type> __ilist) {
+  std::initializer_list<_CharT> __ilist) {
+
   return this->replace(__beg, __end, __ilist.begin(), __ilist.end());
 }
 
@@ -2262,7 +2305,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-copy(pointer __dest, size_type __count, size_type __pos) const {
+copy(_CharT* __dest, size_type __count, size_type __pos) const {
   _Check(__pos, "MyBasicString::copy");
   auto __total = this->_Limit(__pos, __count);
   if (__total) {
@@ -2275,13 +2318,13 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 void
 MyBasicString<_CharT, _Traits, _Alloc>::
-resize(size_type __count) { this->resize(__count, value_type()); }
+resize(size_type __count) { this->resize(__count, _CharT()); }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 void
 MyBasicString<_CharT, _Traits, _Alloc>::
-resize(size_type __count, value_type __ch) {
+resize(size_type __count, const _CharT __ch) {
   const size_type __length = this->length();
   if (__length < __count) {
     this->append(__count - __length, __ch);
@@ -2307,7 +2350,7 @@ swap(MyBasicString& __other) noexcept(
   if (this->_IsLocal()) {
     if (__other._IsLocal()) {
       if (this->length() && __other.length()) {
-        value_type __tmpStr[_localCapacity] = {0};
+        _CharT __tmpStr[_localCapacity] = {0};
         traits_type::copy(__tmpStr, __other._Data(), __other.length() + 1);
         traits_type::copy(__other._localData, this->_Data(), this->length() + 1);
         traits_type::copy(_localData, __tmpStr, __other.length() + 1);
@@ -2339,7 +2382,7 @@ swap(MyBasicString& __other) noexcept(
       __other._Data(this->_Data());
       this->_Data(this->_LocalData());
     } else {
-      pointer __tmpStr = this->_Data();
+      _CharT* __tmpStr = this->_Data();
       this->_Data(__other._Data());
       __other._Data(__tmpStr);
       this->_Capacity(__other.capacity());
@@ -2363,8 +2406,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find(const std::basic_string<value_type>& __other,
-                 size_type __pos) const noexcept {
+find(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+  size_type __pos) const noexcept {
+
   return this->find(__other.data(), __pos, __other.length());
 }
 
@@ -2372,11 +2416,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find(const_pointer __cStr, size_type __pos, size_type __count) const {
-  const auto __length = this->length();
-  if (__count == 0) { return (__pos <= __length) ? __pos : npos; }
-  if (__pos >= __length) { return npos; }
-
+find(const _CharT* __cStr, size_type __pos, size_type __count) const {
   std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
   __vs.emplace_back(__cStr, __count);
   MyTypes::PatternSearcher<MyBasicString> __search(__vs);
@@ -2391,7 +2431,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find(const_pointer __cStr, size_type __pos) const {
+find(const _CharT* __cStr, size_type __pos) const {
   return this->find(__cStr, __pos, traits_type::length(__cStr));
 }
 
@@ -2399,7 +2439,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find(value_type __ch, size_type __pos) const noexcept {
+find(const _CharT __ch, size_type __pos) const noexcept {
   return this->find(&__ch, __pos, size_type(1));
 }
 
@@ -2415,8 +2455,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-rfind(const std::basic_string<value_type>& __other,  size_type __pos) const
-noexcept {
+rfind(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+
+  size_type __pos) const noexcept {
   return this->rfind(__other.data(), __pos, __other.length());
 }
 
@@ -2424,8 +2465,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-rfind(const_pointer __cStr, size_type __pos, size_type __count) const {
-
+rfind(const _CharT* __cStr, size_type __pos, size_type __count) const {
   std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
   __vs.emplace_back(__cStr, __count);
   MyTypes::PatternSearcher<MyBasicString> __search(__vs);
@@ -2441,7 +2481,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-rfind(const_pointer __cStr, size_type __pos) const {
+rfind(const _CharT* __cStr, size_type __pos) const {
   return this->rfind(__cStr, __pos, traits_type::length(__cStr));
 }
 
@@ -2449,7 +2489,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-rfind(value_type __ch, size_type __pos) const noexcept {
+rfind(const _CharT __ch, size_type __pos) const noexcept {
   return this->rfind(&__ch, __pos, size_type(1));
 }
 
@@ -2465,8 +2505,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_of(const std::basic_string<value_type>& __other, size_type __pos)
-const noexcept {
+find_first_of(const std::basic_string<_CharT, _Traits, _Alloc>& __other,
+  size_type __pos) const noexcept {
+
   return this->find_first_of(__other.data(), __pos, __other.length());
 }
 
@@ -2474,8 +2515,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_of(const_pointer __cStr, size_type __pos, size_type __count) const {
-  if (__count == 0 || __pos >= this->length()) { return npos; }
+find_first_of(const _CharT* __cStr, size_type __pos, size_type __count) const {
 
   std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
   for (size_type i = 0; i < __count; ++i) {
@@ -2493,7 +2533,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_of(const_pointer __cStr, size_type __pos) const {
+find_first_of(const _CharT* __cStr, size_type __pos) const {
   return this->find_first_of(__cStr, __pos, traits_type::length(__cStr));
 }
 
@@ -2501,7 +2541,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_of(value_type __ch, size_type __pos) const noexcept {
+find_first_of(const _CharT __ch, size_type __pos) const noexcept {
   return this->find(__ch, __pos);
 }
 
@@ -2516,8 +2556,10 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_not_of(const std::basic_string<value_type>& __other, size_type __pos)
-const noexcept {
+find_first_not_of(
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos)
+  const noexcept {
+
   return this->find_first_not_of(__other.data(), __pos, __other.length());
 }
 
@@ -2525,9 +2567,9 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_not_of(const_pointer __cStr, size_type __pos, size_type __count)
+find_first_not_of(const _CharT* __cStr, size_type __pos, size_type __count)
 const {
-  if (__count == 0 || __pos >= this->length()) { return npos; }
+  if (__count == 0) { return (__pos >= this->length()) ? npos : __pos; }
 
   std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
   for (size_type i = 0; i < __count; ++i) {
@@ -2535,14 +2577,10 @@ const {
   }
   MyTypes::PatternSearcher __search(__vs);
   const auto __res = __search(*this);
-  size_type __idx = __pos;
   auto __beg = __res.cbegin();
   auto __end = __res.cend();
-  for (;__beg != __end && __idx > __beg->second; ++__beg);
-  while (__beg != __end && __idx < this->length()) {
-    if (__idx != __beg->second) { return __idx; }
-    ++__idx;
-    ++__beg;
+  for (; __pos < this->length() && __beg != __end; ++__pos, ++__beg) {
+    if (__beg->second != __pos) { return __pos; }
   }
   return npos;
 }
@@ -2551,7 +2589,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_not_of(const_pointer __cStr, size_type __pos) const {
+find_first_not_of(const _CharT* __cStr, size_type __pos) const {
   return this->find_first_not_of(__cStr, __pos, traits_type::length(__cStr));
 }
 
@@ -2559,7 +2597,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_first_not_of(value_type __ch, size_type __pos) const noexcept {
+find_first_not_of(const _CharT __ch, size_type __pos) const noexcept {
   for (size_type __idx = __pos; __idx < this->length(); ++__idx) {
     if (this->_Data()[__idx] != __ch) { return __idx; }
   }
@@ -2578,8 +2616,10 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_of(const std::basic_string<value_type>& __other, size_type __pos)
-const noexcept {
+find_last_of(
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos)
+  const noexcept {
+
   return this->find_last_of(__other.data(), __pos, __other.length());
 }
 
@@ -2587,10 +2627,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_of(const_pointer __cStr, size_type __pos, size_type __count) const {
-  if (this->length() == 0) { return npos; }
-  if (__count == 0) { return (__pos > this->length()) ? npos : __pos; }
-  if (__pos == npos) { __pos = this->length(); }
+find_last_of(const _CharT* __cStr, size_type __pos, size_type __count) const {
 
   std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
   for (size_type i = 0; i < __count; ++i) {
@@ -2609,7 +2646,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_of(const_pointer __cStr, size_type __pos) const {
+find_last_of(const _CharT* __cStr, size_type __pos) const {
   return this->find_last_of(__cStr, __pos, traits_type::length(__cStr));
 }
 
@@ -2617,7 +2654,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_of(value_type __ch, size_type __pos) const noexcept {
+find_last_of(const _CharT __ch, size_type __pos) const noexcept {
   return this->rfind(__ch, __pos);
 }
 
@@ -2633,8 +2670,10 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_not_of(const std::basic_string<value_type>& __other, size_type __pos)
-const noexcept {
+find_last_not_of(
+  const std::basic_string<_CharT, _Traits, _Alloc>& __other, size_type __pos)
+  const noexcept {
+
   return this->find_last_not_of(__other.data(), __pos, __other.length());
 }
 
@@ -2642,16 +2681,32 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_not_of(const_pointer __cStr, size_type __pos, size_type __count)
+find_last_not_of(const _CharT* __cStr, size_type __pos, size_type __count)
 const {
-  if (this->length() == 0) { return npos; }
+  const size_type __lastPos = this->length() - 1;
+  __pos = (__pos > __lastPos) ? __lastPos : __pos;
+  if (__count == 0) { return __pos; }
+
+  std::vector<MyBasicString<_CharT, _Traits, _Alloc>> __vs;
+  for (size_type i = 0; i < __count; ++i) {
+    __vs.emplace_back(__cStr[i]);
+  }
+  MyTypes::PatternSearcher __search(__vs);
+  auto __res = __search(*this);
+  std::reverse(__res.begin(), __res.end());
+  auto __beg = __res.cbegin();
+  auto __end = __res.cend();
+  for (; __pos >= 0 && __beg != __end; --__pos, ++__beg) {
+    if (__beg->second != __pos) { return __pos; }
+  }
+  return npos;
 }
 
 template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_not_of(const_pointer __cStr, size_type __pos) const {
+find_last_not_of(const _CharT* __cStr, size_type __pos) const {
   return this->find_last_not_of(__cStr, __pos, traits_type::length(__cStr));
 }
 
@@ -2659,7 +2714,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 typename MyBasicString<_CharT, _Traits, _Alloc>::size_type
 MyBasicString<_CharT, _Traits, _Alloc>::
-find_last_not_of(value_type __ch, size_type __pos) const noexcept {
+find_last_not_of(const _CharT __ch, size_type __pos) const noexcept {
   size_type __len = this->length();
   if (__len) {
     if (--__len > __pos) { __len = __pos; }
@@ -2670,6 +2725,479 @@ find_last_not_of(value_type __ch, size_type __pos) const noexcept {
   return npos;
 }
 
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(1, __rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const _CharT __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>&& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>&& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>&& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>&& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>&& __lhs,
+  const _CharT*& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>&& __lhs,
+  const _CharT __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(1, __rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>&& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+MyBasicString<_CharT, _Traits, _Alloc>
+operator+(const _CharT __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>&& __rhs) {
+
+  MyBasicString<_CharT, _Traits, _Alloc> __res(__lhs);
+  return __res.append(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) < 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  
+  return __lhs.compare(__rhs) > 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator!=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) != 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator==(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) == 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) <= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) >= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) < 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) > 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator!=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) != 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator==(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) == 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) <= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const std::basic_string<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __lhs.compare(__rhs) >= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) > 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  
+  return __rhs.compare(__lhs) < 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator!=(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) != 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator==(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) == 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<=(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) >= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>=(const std::basic_string<_CharT, _Traits, _Alloc>& __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) <= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  return __lhs.compare(__rhs) < 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  return __lhs.compare(__rhs) > 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator!=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  return __lhs.compare(__rhs) != 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator==(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  return __lhs.compare(__rhs) == 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  return __lhs.compare(__rhs) <= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  const _CharT* __rhs) {
+
+  return __lhs.compare(__rhs) >= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) > 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  
+  return __rhs.compare(__lhs) < 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator!=(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) != 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator==(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) == 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator<=(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) >= 0;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+_CXX20_CONSTEXPR
+bool
+operator>=(const _CharT* __lhs,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+
+  return __rhs.compare(__lhs) <= 0;
+}
+
+using streamsize = ptrdiff_t;
+
+template <typename _CharT, typename _Traits>
+inline void _OstreamFill(std::basic_ostream<_CharT, _Traits>& __os,
+  streamsize __count) {
+
+  using ostream_type = std::basic_ostream<_CharT, _Traits>;
+  using ios_base = typename ostream_type::ios_base;
+
+  const _CharT __ch = __os.fill();
+  for (; __count > 0; --__count) {
+    const typename _Traits::int_type __put = __os.rdbuf()->sputc(__ch);
+    if (_Traits::eq_int_type(__put, _Traits::eof())) {
+      __os.setstate(ios_base::badbit);
+      break;
+    }
+  }
+}
+
+template <typename _CharT, typename _Traits>
+inline void _OstreamWrite(std::basic_ostream<_CharT, _Traits>& __os,
+  const _CharT* __str, streamsize __count) {
+
+  using ostream_type = std::basic_ostream<_CharT, _Traits>;
+  using ios_base = typename ostream_type::ios_base;
+
+  const streamsize __put = __os.rdbuf()->sputn(__str, __count);
+  if (__put != __count) { __os.setstate(ios_base::badbit); }
+}
+
+template <typename _CharT, typename _Traits>
+std::basic_ostream<_CharT, _Traits>&
+_OstreamInsert(std::basic_ostream<_CharT, _Traits>& __os, const _CharT* __str,
+  streamsize __count) {
+
+  using ostream_type = std::basic_ostream<_CharT, _Traits>;
+  using ios_base = typename ostream_type::ios_base;
+
+  typename ostream_type::sentry __sentry(__os);
+  if (__sentry) {
+    try {
+      const streamsize __width = __os.width();
+      if (__width > __count) {
+        const bool __left =
+          ((__os.flags() & ios_base::adjustfield) == ios_base::left);
+        if (!__left) { _OstreamFill(__os, __width - __count); }
+        if (__os.good()) { _OstreamWrite(__os, __str, __count); }
+        if (__left && __os.good()) { _OstreamFill(__os, __width - __count); }
+      } else { _OstreamWrite(__os, __str, __count); }
+      __os.width(0);
+    } catch(...) {
+      __os.setstate(ios_base::badbit);
+    }
+  }
+  return __os;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+std::basic_ostream<_CharT, _Traits>&
+operator<<(std::basic_ostream<_CharT, _Traits>& __os,
+  const MyBasicString<_CharT, _Traits, _Alloc>& __str) {
+  return _OstreamInsert(__os, __str.data(), __str.length());
+}
 
 namespace PMR {
 template <typename _CharT, typename _Traits = std::char_traits<_CharT>>
@@ -2689,15 +3217,22 @@ using MyWideString = MyBasicString<wchar_t>;
 using MyU16String = MyBasicString<char16_t>;
 using MyU32String = MyBasicString<char32_t>;
 
-
 } // namespace MyTypes
 
+
+// Extending std namespace for MyTypes::MyBasicString
+namespace std {
+
 template <typename _CharT, typename _Traits, typename _Alloc>
-std::basic_ostream<_CharT, _Traits>& operator<<(
-    std::basic_ostream<_CharT, _Traits>& out,
-    const MyTypes::MyBasicString<_CharT, _Traits, _Alloc>& str) noexcept {
-  out << str.data();
-  return out;
+_CXX20_CONSTEXPR
+void swap(MyTypes::MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
+  MyTypes::MyBasicString<_CharT, _Traits, _Alloc>& __rhs)
+  noexcept(noexcept(__lhs.swap(__rhs))) {
+
+  __lhs.swap(__rhs);
 }
+
+} // namespace std
+
 
 #endif //_MY_STRING_H

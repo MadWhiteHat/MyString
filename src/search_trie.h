@@ -66,6 +66,7 @@ class PatternSearcher {
  private:
 
   bool _IsStringInTrie(const string_type& __pattern) const noexcept {
+    if (__pattern.length() == 0 && !_trie[0]._isLeaf) { return false; }
     size_type __vertex = 0;
     for (pos_type i = 0; i < __pattern.length(); ++i) {
       value_type __ch = __pattern[i];
@@ -164,7 +165,7 @@ class PatternSearcher {
 
   std::vector<_Vertex> _trie;
   std::vector<std::reference_wrapper<const string_type>> _patterns;
-
+  size_type _emptyPatternNum = -1;
 };
 
 template <typename _String, typename _EqComparator>
@@ -197,6 +198,7 @@ AddToTrie(const string_type& __pattern) {
   _patterns.push_back(__pattern);
   _trie[__pos]._isLeaf = true;
   _trie[__pos]._patternNum = _patterns.size() - 1;
+  if (__pattern.length() == 0) { _emptyPatternNum = _patterns.size() - 1;}
 }
 
 template <typename _String, typename _EqComparator>
@@ -206,6 +208,12 @@ std::vector<std::pair<
 PatternSearcher<_String, _EqComparator>::
 operator()(const string_type&__word) {
   std::vector<std::pair<size_type, pos_type>> __res;
+  if (_emptyPatternNum != -1) {
+    size_type __idx = 0;
+    do {
+      __res.emplace_back(_emptyPatternNum, __idx);
+    } while(++__idx <= __word.length());
+  }
   size_type __u = 0;
   for (pos_type __idx = 0; __idx < __word.length(); ++__idx) {
     __u = _GetAutoMove(__u, __word[__idx]);
@@ -213,7 +221,6 @@ operator()(const string_type&__word) {
     if (__resPair.second != npos) {
       __res.push_back(std::move(__resPair));
     }
-    
   }
   std::sort(__res.begin(), __res.end(), SortCompare{});
   return __res;

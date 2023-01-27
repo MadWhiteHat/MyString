@@ -10,20 +10,7 @@
 
 template <typename _Tuple>
 class PropertiesTests : public TestingHelper::StringTestingBase<_Tuple> {};
-
-using MyParamTypes = testing::Types<
-// For types defined in standards after C++17
-#if __cplusplus > 201703L
-  std::tuple<char8_t>
-#endif
-  std::tuple<char>,
-  std::tuple<char16_t>,
-  std::tuple<char32_t>,
-  std::tuple<wchar_t>,
-  std::tuple<char, std::char_traits<char>>,
-  std::tuple<char, std::char_traits<char>,
-  std::pmr::polymorphic_allocator<char>>
->;
+using TestingHelper::MyParamTypes;
 
 TYPED_TEST_SUITE(PropertiesTests, MyParamTypes);
 

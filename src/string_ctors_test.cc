@@ -12,20 +12,7 @@
 
 template <typename _Tuple>
 class ConstructorsTests : public TestingHelper::StringTestingBase<_Tuple> {};
-
-using MyParamTypes = testing::Types<
-// For types defined in standards after C++17
-#if __cplusplus > 201703L
-  std::tuple<char8_t>
-#endif
-  std::tuple<char>,
-  std::tuple<char16_t>,
-  std::tuple<char32_t>,
-  std::tuple<wchar_t>,
-  std::tuple<char, std::char_traits<char>>,
-  std::tuple<char, std::char_traits<char>,
-  std::pmr::polymorphic_allocator<char>>
->;
+using TestingHelper::MyParamTypes;
 
 TYPED_TEST_SUITE(ConstructorsTests, MyParamTypes);
 
@@ -60,7 +47,7 @@ TYPED_TEST(ConstructorsTests, SingleChar) {
 
   const value_type __ch = *(TestFixture::_str1.begin());
 
-  const std::basic_string<value_type> __cmp(1, __ch);
+  const typename TestFixture::STLString __cmp(1, __ch);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ch);
@@ -79,7 +66,7 @@ TYPED_TEST(ConstructorsTests, CharsInLocal) {
   const value_type __ch = *(TestFixture::_str1.begin());
   const size_type __count = 0x8e % TestFixture::_localBufferCapThreshold;
 
-  const std::basic_string<value_type> __cmp(__count, __ch);
+  const typename TestFixture::STLString __cmp(__count, __ch);
 
   //Act
   const typename TestFixture::MyTestingString __str(__count, __ch);
@@ -100,7 +87,7 @@ TYPED_TEST(ConstructorsTests, CharsDynamic) {
     TestFixture::_localBufferCapThreshold;
   ADJUST_OUT(TestFixture::_localBufferLenThreshold + 1, __count);
 
-  const std::basic_string<value_type> __cmp(__count, __ch);
+  const typename TestFixture::STLString __cmp(__count, __ch);
 
   //Act
   const typename TestFixture::MyTestingString __str(__count, __ch);
@@ -118,12 +105,12 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInside) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 6;
   ADJUST_POS_LOCAL(__other.length(), __pos);
 
-  const std::basic_string<value_type> __cmp(__other, __pos);
+  const typename TestFixture::STLString __cmp(__other, __pos);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos);
@@ -141,12 +128,12 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicPosInside) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 6;
   ADJUST_POS_DYNAMIC(__other.length(), __pos);
 
-  const std::basic_string<value_type> __cmp(__other, __pos);
+  const typename TestFixture::STLString __cmp(__other, __pos);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos);
@@ -165,7 +152,7 @@ TYPED_TEST(ConstructorsTests, STLStringPosOutside) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   //Act
   size_type __pos = 1000;
@@ -184,13 +171,13 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountValid) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 6;
   size_type __count = TestFixture::_localBufferLenThreshold;
   ADJUST_POS_COUNT_LOCAL(__other.length(), __pos, __count);
 
-  const std::basic_string<value_type> __cmp(__other, __pos, __count);
+  const typename TestFixture::STLString __cmp(__other, __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -208,14 +195,14 @@ TYPED_TEST(ConstructorsTests, STLStringLocalPosInsideCountOver) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 6;
   size_type __count = 1000;
   ADJUST_POS_LOCAL(__other.length(), __pos);
   ADJUST_OUT(__other.length() + 1, __count);
 
-  const std::basic_string<value_type> __cmp(__other, __pos, __count);
+  const typename TestFixture::STLString __cmp(__other, __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -233,13 +220,13 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicPosInsideCountValid) {
 
    const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 6;
   size_type __count = TestFixture::_localBufferCapThreshold;
   ADJUST_POS_COUNT_DYNAMIC(__other.length(), __pos, __count);
 
-  const std::basic_string<value_type> __cmp(__other, __pos, __count);
+  const typename TestFixture::STLString __cmp(__other, __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -257,14 +244,14 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicPosInsideCountOver) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 6;
   size_type __count = 1000;
   ADJUST_POS_DYNAMIC(__other.length(), __pos);
   ADJUST_OUT(__other.length() + 1, __count);
 
-  const std::basic_string<value_type> __cmp(__other, __pos, __count);
+  const typename TestFixture::STLString __cmp(__other, __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -282,7 +269,7 @@ TYPED_TEST(ConstructorsTests, STLStringPosOutsideCounted) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
   size_type __pos = 1000;
   const size_type __count = 6;
@@ -307,7 +294,7 @@ TYPED_TEST(ConstructorsTests, MyStringLocalPosInside) {
   size_type __pos = 6;
   ADJUST_POS_LOCAL(__other.length(), __pos);
 
-  const std::basic_string<value_type> __cmp(__other.data() + __pos);
+  const typename TestFixture::STLString __cmp(__other.data() + __pos);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos);
@@ -330,7 +317,7 @@ TYPED_TEST(ConstructorsTests, MyStringDynamicPosInside) {
   size_type __pos = 6;
   ADJUST_POS_DYNAMIC(__other.length(), __pos);
 
-  const std::basic_string<value_type> __cmp(__other.data() + __pos);
+  const typename TestFixture::STLString __cmp(__other.data() + __pos);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos);
@@ -375,7 +362,7 @@ TYPED_TEST(ConstructorsTests, MyStringLocalPosInsideCountValid) {
   size_type __count = TestFixture::_localBufferLenThreshold;
   ADJUST_POS_COUNT_LOCAL(__other.length(), __pos, __count);
 
-  const std::basic_string<value_type> __cmp(__other.data() +  __pos, __count);
+  const typename TestFixture::STLString __cmp(__other.data() +  __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -400,8 +387,8 @@ TYPED_TEST(ConstructorsTests, MyStringLocalPosInsideCountOver) {
   ADJUST_POS_LOCAL(__other.length(), __pos);
   ADJUST_OUT(__other.length() + 1, __count);
 
-  const std::basic_string<value_type> __helper(__ilist);
-  const std::basic_string<value_type> __cmp(__helper, __pos, __count);
+  const typename TestFixture::STLString __helper(__ilist);
+  const typename TestFixture::STLString __cmp(__helper, __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -425,7 +412,7 @@ TYPED_TEST(ConstructorsTests, MyStringDynamicPosInsideCountValid) {
   size_type __count = TestFixture::_localBufferCapThreshold + 1;
   ADJUST_POS_COUNT_DYNAMIC(__other.length(), __pos, __count);
 
-  const std::basic_string<value_type> __cmp(__other.data() + __pos, __count);
+  const typename TestFixture::STLString __cmp(__other.data() + __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -450,8 +437,8 @@ TYPED_TEST(ConstructorsTests, MyStringDynamicPosInsideCountOver) {
   ADJUST_POS_DYNAMIC(__other.length(), __pos);
   ADJUST_OUT(__other.length(), __count);
 
-  const std::basic_string<value_type> __helper(__ilist);
-  const std::basic_string<value_type> __cmp(__helper, __pos, __count);
+  const typename TestFixture::STLString __helper(__ilist);
+  const typename TestFixture::STLString __cmp(__helper, __pos, __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, __pos, __count);
@@ -493,7 +480,7 @@ TYPED_TEST(ConstructorsTests, CStringLocalCounted) {
   size_type __count = TestFixture::_localBufferCapThreshold - 2;
   ADJUST_IN(TestFixture::_localBufferLenThreshold, __count);
 
-  const std::basic_string<value_type> __cmp(__ilist.begin(), __count);
+  const typename TestFixture::STLString __cmp(__ilist.begin(), __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ilist.begin(), __count);
@@ -514,7 +501,7 @@ TYPED_TEST(ConstructorsTests, CStringDynamicCounted) {
   size_type __count = TestFixture::_localBufferLenThreshold + 1;
   ADJUST_OUT(TestFixture::_localBufferLenThreshold + 1, __count);
 
-  const std::basic_string<value_type> __cmp(__ilist.begin(), __count);
+  const typename TestFixture::STLString __cmp(__ilist.begin(), __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ilist.begin(), __count);
@@ -568,7 +555,7 @@ TYPED_TEST(ConstructorsTests, CStringLocal) {
   size_type __count = TestFixture::_localBufferLenThreshold;
   ADJUST_IN(TestFixture::_localBufferLenThreshold, __count);
 
-  const std::basic_string<value_type> __cmp(__ilist.begin(), __count);
+  const typename TestFixture::STLString __cmp(__ilist.begin(), __count);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ilist.begin(), __count);
@@ -584,7 +571,7 @@ TYPED_TEST(ConstructorsTests, CStringDynamic) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __cmp(__ilist.begin(), __ilist.size());
+  const typename TestFixture::STLString __cmp(__ilist.begin(), __ilist.size());
 
   //Act
   const typename TestFixture::MyTestingString __str(__ilist.begin(),
@@ -617,10 +604,10 @@ TYPED_TEST(ConstructorsTests, InputIterLocal) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist.begin(),
+  const typename TestFixture::STLString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
-  const std::basic_string<value_type> __cmp(__other.begin(), __other.end());
+  const typename TestFixture::STLString __cmp(__other.begin(), __other.end());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other.begin(),
@@ -638,9 +625,9 @@ TYPED_TEST(ConstructorsTests, InputIterDynamic) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
-  const std::basic_string<value_type> __cmp(__other.begin(), __other.end());
+  const typename TestFixture::STLString __cmp(__other.begin(), __other.end());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other.begin(),
@@ -658,10 +645,10 @@ TYPED_TEST(ConstructorsTests, STLStringLocal) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist.begin(),
+  const typename TestFixture::STLString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
-  const std::basic_string<value_type> __cmp(__other);
+  const typename TestFixture::STLString __cmp(__other);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other);
@@ -678,9 +665,9 @@ TYPED_TEST(ConstructorsTests, STLStringDynamic) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
-  const std::basic_string<value_type> __cmp(__other);
+  const typename TestFixture::STLString __cmp(__other);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other);
@@ -698,10 +685,10 @@ TYPED_TEST(ConstructorsTests, STLStringLocalAlloc) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist.begin(),
+  const typename TestFixture::STLString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
-  const std::basic_string<value_type> __cmp(__other);
+  const typename TestFixture::STLString __cmp(__other);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, allocator_type());
@@ -719,9 +706,9 @@ TYPED_TEST(ConstructorsTests, STLStringDynamicAlloc) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __other(__ilist);
+  const typename TestFixture::STLString __other(__ilist);
 
-  const std::basic_string<value_type> __cmp(__other);
+  const typename TestFixture::STLString __cmp(__other);
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, allocator_type());
@@ -741,7 +728,7 @@ TYPED_TEST(ConstructorsTests, MyStringLocal) {
   const typename TestFixture::MyTestingString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
-  const std::basic_string<value_type> __cmp(__other.data());
+  const typename TestFixture::STLString __cmp(__other.data());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other);
@@ -760,7 +747,7 @@ TYPED_TEST(ConstructorsTests, MyStringDynamic) {
 
   const typename TestFixture::MyTestingString __other(__ilist);
 
-  const std::basic_string<value_type> __cmp(__other.data());
+  const typename TestFixture::STLString __cmp(__other.data());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other);
@@ -781,7 +768,7 @@ TYPED_TEST(ConstructorsTests, MyStringLocalAlloc) {
   const typename TestFixture::MyTestingString __other(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
 
-  const std::basic_string<value_type> __cmp(__other.data());
+  const typename TestFixture::STLString __cmp(__other.data());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, allocator_type());
@@ -801,7 +788,7 @@ TYPED_TEST(ConstructorsTests, MyStringDynamicAlloc) {
 
   const typename TestFixture::MyTestingString __other(__ilist);
 
-  const std::basic_string<value_type> __cmp(__other.data());
+  const typename TestFixture::STLString __cmp(__other.data());
 
   //Act
   const typename TestFixture::MyTestingString __str(__other, allocator_type());
@@ -906,7 +893,7 @@ TYPED_TEST(ConstructorsTests, InitaiazierListLocal) {
   using value_type = typename TestFixture::value_type;
   const std::initializer_list<value_type> __ilist =  {'H', 'e', 'l'};
 
-  const std::basic_string<value_type> __cmp(__ilist);
+  const typename TestFixture::STLString __cmp(__ilist);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ilist);
@@ -923,7 +910,7 @@ TYPED_TEST(ConstructorsTests, InitaiazierListDynamic) {
 
   const auto __ilist = TestFixture::_str1;
 
-  const std::basic_string<value_type> __cmp(__ilist);
+  const typename TestFixture::STLString __cmp(__ilist);
 
   //Act
   const typename TestFixture::MyTestingString __str(__ilist);

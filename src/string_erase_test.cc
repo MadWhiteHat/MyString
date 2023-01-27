@@ -10,20 +10,7 @@
 
 template <typename _Tuple>
 class EraseTests : public TestingHelper::StringTestingBase<_Tuple> {};
-
-using MyParamTypes = testing::Types<
-// For types defined in standards after C++17
-#if __cplusplus > 201703L
-  std::tuple<char8_t>
-#endif
-  std::tuple<char>,
-  std::tuple<char16_t>,
-  std::tuple<char32_t>,
-  std::tuple<wchar_t>,
-  std::tuple<char, std::char_traits<char>>,
-  std::tuple<char, std::char_traits<char>,
-  std::pmr::polymorphic_allocator<char>>
->;
+using TestingHelper::MyParamTypes;
 
 TYPED_TEST_SUITE(EraseTests, MyParamTypes);
 
@@ -43,7 +30,7 @@ TYPED_TEST(EraseTests, PosCountNone) {
   const size_type __pos = 0;
   const size_type __count = 0;
 
-  std::basic_string<value_type> __cmp(__ilist1.begin(),
+  typename TestFixture::STLString __cmp(__ilist1.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.erase(__pos, __count);
 
@@ -72,7 +59,7 @@ TYPED_TEST(EraseTests, PosCountLocalBegin) {
   size_type __count = 1;
   ADJUST_OUT(1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.erase(__pos, __count);
 
@@ -103,7 +90,7 @@ TYPED_TEST(EraseTests, PosCountLocalMid) {
   size_type __count = 1;
   ADJUST_OUT(1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.erase(__pos, __count);
 
@@ -132,7 +119,7 @@ TYPED_TEST(EraseTests, PosCountLocalEnd) {
   size_type __count = 1;
   ADJUST_OUT(1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.erase(__pos, __count);
 
@@ -160,7 +147,7 @@ TYPED_TEST(EraseTests, PosCountDynamicBegin) {
   size_type __count = __str.length() / 2;
   ADJUST_OUT(1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.erase(__pos, __count);
 
   //Act
@@ -189,7 +176,7 @@ TYPED_TEST(EraseTests, PosCountDynamicMid) {
   size_type __count = __str.length() / 2;
   ADJUST_OUT(1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.erase(__pos, __count);
 
   //Act
@@ -216,7 +203,7 @@ TYPED_TEST(EraseTests, PosCountDynamicEnd) {
   size_type __count = __str.length() / 2;
   ADJUST_OUT(1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.erase(__pos, __count);
 
   //Act
@@ -271,7 +258,7 @@ TYPED_TEST(EraseTests, IterLocalBegin) {
 
   auto __prevCap = __str.capacity();
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin());
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -303,7 +290,7 @@ TYPED_TEST(EraseTests, IterLocalMid) {
   ADJUST_OUT(1, __shift);
   ADJUST_IN(__str.length() - 2, __shift);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -333,7 +320,7 @@ TYPED_TEST(EraseTests, IterLocalEnd) {
 
   const size_type __shift = __str.length() - 1;
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -361,7 +348,7 @@ TYPED_TEST(EraseTests, IterDynamicToLocalBegin) {
 
   auto __prevCap = __str.capacity();
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold + 1);
   auto __retIterCmp = __cmp.erase(__cmp.begin());
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -393,7 +380,7 @@ TYPED_TEST(EraseTests, IterDynamicToLocalMid) {
   ADJUST_OUT(1, __shift);
   ADJUST_IN(__str.length() - 2, __shift);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold + 1);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -423,7 +410,7 @@ TYPED_TEST(EraseTests, IterDynamicToLocalEnd) {
 
   const size_type __shift = __str.length() - 1;
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold + 1);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -450,7 +437,7 @@ TYPED_TEST(EraseTests, IterDynamicToDynamicBegin) {
 
   auto __prevCap = __str.capacity();
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __retIterCmp = __cmp.erase(__cmp.begin());
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
 
@@ -480,7 +467,7 @@ TYPED_TEST(EraseTests, IterDynamicToDynamicMid) {
   ADJUST_OUT(1, __shift);
   ADJUST_IN(__str.length() - 2, __shift);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
 
@@ -508,7 +495,7 @@ TYPED_TEST(EraseTests, IterDynamicToDynamicEnd) {
 
   const size_type __shift = __str.length() - 1;
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
 
@@ -538,7 +525,7 @@ TYPED_TEST(EraseTests, IterRangeNone) {
 
   const size_type __count = 0;
 
-  std::basic_string<value_type> __cmp(__ilist1.begin(),
+  typename TestFixture::STLString __cmp(__ilist1.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin(), __cmp.begin() + __count);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -571,7 +558,7 @@ TYPED_TEST(EraseTests, IterRangeLocalBegin) {
   ADJUST_OUT(1, __count);
   ADJUST_IN(__str.length() - __shift, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
     __shift + __count);
@@ -608,7 +595,7 @@ TYPED_TEST(EraseTests, IterRangeLocalMid) {
   ADJUST_OUT(1, __count);
   ADJUST_IN(__str.length() - __shift, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
     __shift + __count);
@@ -643,7 +630,7 @@ TYPED_TEST(EraseTests, IterRangeLocalEnd) {
   ADJUST_OUT(1, __count);
   ADJUST_IN(__str.length() - __shift, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
     __shift + __count);
@@ -677,7 +664,7 @@ TYPED_TEST(EraseTests, IterRangeDynamicBegin) {
   ADJUST_OUT(1, __count);
   ADJUST_IN(__str.length() - __shift, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
     __shift + __count);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -712,7 +699,7 @@ TYPED_TEST(EraseTests, IterRangeDynamicMid) {
   ADJUST_OUT(1, __count);
   ADJUST_IN(__str.length() - __shift, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
     __shift + __count);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());
@@ -745,7 +732,7 @@ TYPED_TEST(EraseTests, IterRangeDynamicEnd) {
   ADJUST_OUT(1, __count);
   ADJUST_IN(__str.length() - __shift, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __retIterCmp = __cmp.erase(__cmp.begin() + __shift, __cmp.begin() +
     __shift + __count);
   auto __diffCmp = std::distance(__retIterCmp, __cmp.begin());

@@ -22,7 +22,7 @@
 // Custom function names: UpperCamelCasd
 
 int main(const int32_t, const char**) {
-  MyTypes::MyString ms("hello worlod");
-  ms.assign(20, 'a');
+  MyTypes::MyString ms("hello");
+  std::cout << ms.length() << std::endl;
   std::cout << ms.data() << ' ' << ms.length() <<  '/' << ms.capacity() << std::endl;
 }

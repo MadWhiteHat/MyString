@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.23.0 FATAL_ERROR)
 
 project(MyString LANGUAGES CXX C)
 
+set(CMAKE_CXX_STANDARD 17)
+
 # locating modules dir
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules/")
 include(git_module)
@@ -40,6 +42,7 @@ add_executable(unittests EXCLUDE_FROM_ALL
   ${SOURCE_DIR}/string_compare_test.cc
   ${SOURCE_DIR}/string_replace_test.cc
   ${SOURCE_DIR}/string_find_test.cc
+  ${SOURCE_DIR}/string_concat_operator_test.cc
 )
 
 target_link_libraries(unittests

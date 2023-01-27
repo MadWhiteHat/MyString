@@ -10,20 +10,7 @@
 
 template <typename _Tuple>
 class SimpleOperationsTests : public TestingHelper::StringTestingBase<_Tuple> {};
-
-using MyParamTypes = testing::Types<
-// For types defined in standards after C++17
-#if __cplusplus > 201703L
-  std::tuple<char8_t>
-#endif
-  std::tuple<char>,
-  std::tuple<char16_t>,
-  std::tuple<char32_t>,
-  std::tuple<wchar_t>,
-  std::tuple<char, std::char_traits<char>>,
-  std::tuple<char, std::char_traits<char>,
-  std::pmr::polymorphic_allocator<char>>
->;
+using TestingHelper::MyParamTypes;
 
 TYPED_TEST_SUITE(SimpleOperationsTests, MyParamTypes);
 
@@ -209,7 +196,7 @@ TYPED_TEST(SimpleOperationsTests, PushBackToLocal) {
 
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold - 1);
   __cmp.push_back(__ch);
 
@@ -235,7 +222,7 @@ TYPED_TEST(SimpleOperationsTests, PushBackLocalToDynamic) {
 
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.push_back(__ch);
 
@@ -260,7 +247,7 @@ TYPED_TEST(SimpleOperationsTests, PushBackDynamicToDynamic) {
 
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.push_back(__ch);
 
   //Act
@@ -283,7 +270,7 @@ TYPED_TEST(SimpleOperationsTests, PopBackToLocal) {
 
   auto __prevCap = __str.capacity();
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.pop_back();
 
@@ -307,7 +294,7 @@ TYPED_TEST(SimpleOperationsTests, PopBackDynamicToLocal) {
 
   auto __prevCap = __str.capacity();
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold + 1);
   __cmp.pop_back();
 
@@ -330,7 +317,7 @@ TYPED_TEST(SimpleOperationsTests, PopBackDynamicToDynamic) {
 
   auto __prevCap = __str.capacity();
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.pop_back();
 
   //Act
@@ -560,7 +547,7 @@ TYPED_TEST(SimpleOperationsTests, SubstrLocal) {
   size_type __count = TestFixture::_localBufferLenThreshold;
   ADJUST_POS_COUNT_LOCAL(__str.length(), __pos, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __resCmp = __cmp.substr(__pos, __count);
 
   //Act
@@ -584,7 +571,7 @@ TYPED_TEST(SimpleOperationsTests, SubstrDynamic) {
   size_type __count = TestFixture::_localBufferLenThreshold + 1;
   ADJUST_POS_COUNT_DYNAMIC(__str.length(), __pos, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   auto __resCmp = __cmp.substr(__pos, __count);
 
   //Act
@@ -630,8 +617,8 @@ TYPED_TEST(SimpleOperationsTests, CopyPos) {
   ASSERT_NE(__cStr, nullptr);
   std::memset(__cStr, 0x00, __str.length());
 
-  std::basic_string<value_type> __cmp(__ilist);
-  std::basic_string<value_type> __other(__cmp, __pos, __count);
+  typename TestFixture::STLString __cmp(__ilist);
+  typename TestFixture::STLString __other(__cmp, __pos, __count);
 
   //Act
   __str.copy(__cStr, __count, __pos);
@@ -681,7 +668,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountLocal) {
   ADJUST_OUT(__str.length() + 1, __count);
   ADJUST_IN(TestFixture::_localBufferLenThreshold, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(), __initLen);
+  typename TestFixture::STLString __cmp(__ilist.begin(), __initLen);
   __cmp.resize(__count);
 
   //Act
@@ -708,7 +695,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountLocalToDynamic) {
   size_type __count = __str.length() + 1;
   ADJUST_OUT(__str.length() + 1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.resize(__count);
 
@@ -735,7 +722,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountDynamicToDynamic) {
   size_type __count = __str.length() + 1;
   ADJUST_OUT(__str.length() + 1, __count);
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.resize(__count);
 
   //Act
@@ -764,7 +751,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountCharLocal) {
   ADJUST_IN(TestFixture::_localBufferLenThreshold, __count);
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist.begin(), __initLen);
+  typename TestFixture::STLString __cmp(__ilist.begin(), __initLen);
   __cmp.resize(__count, __ch);
 
   //Act
@@ -792,7 +779,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountCharLocalToDynamic) {
   ADJUST_OUT(__str.length() + 1, __count);
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist.begin(),
+  typename TestFixture::STLString __cmp(__ilist.begin(),
     TestFixture::_localBufferLenThreshold);
   __cmp.resize(__count, __ch);
 
@@ -820,7 +807,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountCharDynamicToDynamic) {
   ADJUST_OUT(__str.length() + 1, __count);
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.resize(__count, __ch);
 
   //Act
@@ -848,7 +835,7 @@ TYPED_TEST(SimpleOperationsTests, ResizeCountCharDecrease) {
   ADJUST_IN(__str.length() - 2, __count);
   const value_type __ch = *(__ilist.begin());
 
-  std::basic_string<value_type> __cmp(__ilist);
+  typename TestFixture::STLString __cmp(__ilist);
   __cmp.resize(__count, __ch);
 
   //Act
@@ -994,4 +981,74 @@ TYPED_TEST(SimpleOperationsTests, SwapDynamicToDynamic) {
   EXPECT_EQ(__other.capacity(), __prevCapStr);
   EXPECT_STREQ_CUSTOM(__other.data(), __other.length(), __ilist1.begin(),
     __other.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, STDSwap) {
+  //Arrange
+  const auto __ilist1 = TestFixture::_str1;
+  const auto __ilist2 = TestFixture::_str2;
+
+  typename TestFixture::MyTestingString __str1(__ilist1);
+  typename TestFixture::MyTestingString __str2(__ilist2);
+
+  typename TestFixture::STLString __cmp1(__ilist1);
+  typename TestFixture::STLString __cmp2(__ilist2);
+  std::swap(__cmp1, __cmp2);
+
+  //Act
+  std::swap(__str1, __str2);
+
+  //Assert
+  EXPECT_STREQ_CUSTOM(__str1.data(), __str1.length(), __cmp1.data(),
+    __cmp1.length());
+  EXPECT_STREQ_CUSTOM(__str2.data(), __str2.length(), __cmp2.data(),
+    __cmp2.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, SimpleOutput) {
+  //Arrange
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __str(__ilist);
+  typename TestFixture::OStringStream __ostreamStr;
+
+  const typename TestFixture::STLString __cmp(__ilist);
+  typename TestFixture::OStringStream __ostreamCmp;
+  __ostreamCmp << __cmp;
+  const auto __resCmp = __ostreamCmp.str();
+
+  //Act
+  __ostreamStr << __str;
+  auto __resStr = __ostreamStr.str();
+
+  //Assert
+  EXPECT_STREQ_CUSTOM(__resStr.data(), __resStr.length(), __resCmp.data(),
+    __resCmp.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, Output) {
+  //Arrange
+  using value_type = typename TestFixture::value_type;
+
+  const auto __ilist = TestFixture::_str1;
+
+  const typename TestFixture::MyTestingString __str(__ilist);
+  typename TestFixture::OStringStream __ostreamStr;
+
+  const typename TestFixture::STLString __cmp(__ilist);
+  typename TestFixture::OStringStream __ostreamCmp;
+  __ostreamCmp << std::right << std::uppercase << std::setw(__cmp.length() * 2)
+    << __cmp;
+  const auto __resCmp = __ostreamCmp.str();
+
+  //Act
+  __ostreamStr << std::right << std::uppercase << std::setw(__str.length() * 2)
+    << __str;
+  auto __resStr = __ostreamStr.str();
+
+  //Assert
+  std::wcout << __resStr.data() << std::endl;
+  std::wcout << __resCmp.data() << std::endl;
+  EXPECT_STREQ_CUSTOM(__resStr.data(), __resStr.length(), __resCmp.data(),
+    __resCmp.length());
 }
