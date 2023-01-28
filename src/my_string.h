@@ -1,6 +1,7 @@
 #ifndef _MY_STRING_H
 #define _MY_STRING_H
 #define LOCAL_CAPACITY (1 << 4)
+#define INPUT_BUFFER_SIZE (1 << 7)
 #define _AHO_CORASICK_SEARCH
 
 #if __cplusplus > 201703L
@@ -429,7 +430,7 @@ class MyBasicString {
   _CXX20_CONSTEXPR
   bool ends_with(const _CharT __ch) const noexcept;
   _CXX20_CONSTEXPR
-  bool ends_with(const _CharT* __cStr)const;
+  bool ends_with(const _CharT* __cStr) const;
 
   _CXX20_CONSTEXPR
   bool contains(const _CharT __ch) const noexcept;
@@ -2869,7 +2870,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 operator<(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
-  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) noexcept {
 
   return __lhs.compare(__rhs) < 0;
 }
@@ -2878,7 +2879,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 operator>(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
-  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) noexcept {
   
   return __lhs.compare(__rhs) > 0;
 }
@@ -2887,7 +2888,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 operator!=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
-  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) noexcept {
 
   return __lhs.compare(__rhs) != 0;
 }
@@ -2896,7 +2897,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 operator==(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
-  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) noexcept {
 
   return __lhs.compare(__rhs) == 0;
 }
@@ -2905,7 +2906,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 operator<=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
-  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) noexcept {
 
   return __lhs.compare(__rhs) <= 0;
 }
@@ -2914,7 +2915,7 @@ template <typename _CharT, typename _Traits, typename _Alloc>
 _CXX20_CONSTEXPR
 bool
 operator>=(const MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
-  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) {
+  const MyBasicString<_CharT, _Traits, _Alloc>& __rhs) noexcept {
 
   return __lhs.compare(__rhs) >= 0;
 }
@@ -3199,6 +3200,61 @@ operator<<(std::basic_ostream<_CharT, _Traits>& __os,
   return _OstreamInsert(__os, __str.data(), __str.length());
 }
 
+template <typename _CharT, typename _Traits, typename _Alloc>
+std::basic_istream<_CharT, _Traits>&
+operator>>(std::basic_istream<_CharT, _Traits>& __is,
+  MyBasicString<_CharT, _Traits, _Alloc>& __str) {
+
+  using istream_type = std::basic_istream<_CharT, _Traits>;
+  using string_type = MyTypes::MyBasicString<_CharT, _Traits, _Alloc>;
+  using ios_base = typename istream_type::ios_base;
+  using int_type = typename istream_type::int_type;
+  using size_type = typename string_type::size_type;
+  using ctype_type = std::ctype<_CharT>;
+  using ctype_base = typename ctype_type::ctype_base;
+
+  size_type __total = 0;
+  typename ios_base::iostate __err = ios_base::goodbit;
+  typename istream_type::sentry __sentry(__is, false);
+
+  if (__sentry) {
+    try {
+      __str.erase();
+      _CharT __buff[INPUT_BUFFER_SIZE] = {0};
+      size_type __len = 0;
+      const streamsize __width = __is.width();
+      const size_type __count = (__width > 0) ?
+        static_cast<size_type>(__width) : __str.max_size();
+      const ctype_type& __ct = std::use_facet<ctype_type>(__is.getloc());
+      const int_type __eof = _Traits::eof();
+      int_type __ch = __is.rdbuf()->sgetc();
+
+      while (__total < __count && !_Traits::eq_int_type(__ch, __eof)
+        && !__ct.is(ctype_base::space, _Traits::to_char_type(__ch))) {
+        if (__len == INPUT_BUFFER_SIZE) {
+          __str.append(__buff, INPUT_BUFFER_SIZE);
+          __len = 0;
+        }
+        __buff[__len++] = _Traits::to_char_type(__ch);
+        ++__total;
+        __ch = __is.rdbuf()->snextc();
+      }
+
+      __str.append(__buff, __len);
+
+      if (__total < __count && _Traits::eq_int_type(__ch, __eof)) {
+        __err |= ios_base::eofbit;
+        __is.width(0);
+      }
+    } catch (...) {
+      __is.setstate(ios_base::badbit);
+    }
+  }
+  if (!__total) { __err |= ios_base::failbit; }
+  if (__err) { __is.setstate(__err); }
+  return __is;
+}
+
 namespace PMR {
 template <typename _CharT, typename _Traits = std::char_traits<_CharT>>
 using MyBasicString = MyTypes::MyBasicString<
@@ -3230,6 +3286,57 @@ void swap(MyTypes::MyBasicString<_CharT, _Traits, _Alloc>& __lhs,
   noexcept(noexcept(__lhs.swap(__rhs))) {
 
   __lhs.swap(__rhs);
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+std::basic_istream<_CharT, _Traits>&
+getline(std::basic_istream<_CharT, _Traits>& __is,
+  MyTypes::MyBasicString<_CharT, _Traits, _Alloc>& __str, _CharT __delim) {
+  using istream_type = std::basic_istream<_CharT, _Traits>;
+  using string_type = MyTypes::MyBasicString<_CharT, _Traits, _Alloc>;
+  using ios_base = typename istream_type::ios_base;
+  using int_type = typename istream_type::int_type;
+  using size_type = typename string_type::size_type;
+
+  size_type __total = 0;
+  const size_type __count = __str.max_size();
+  typename ios_base::iostate __err = ios_base::goodbit;
+  typename istream_type::sentry __sentry(__is, true);
+  if (__sentry) {
+    try {
+      __str.erase();
+      const int_type __iDelim = _Traits::to_int_type(__delim);
+      const int_type __eof = _Traits::eof();
+      int_type __ch = __is.rdbuf()->sgetc();
+
+      while (__total < __count && !_Traits::eq_int_type(__ch, __eof)
+        && !_Traits::eq_int_type(__ch, __iDelim)) {
+
+        __str += _Traits::to_char_type(__ch);
+        ++__total;
+        __ch = __is.rdbuf()->snextc();
+      }
+
+      if (_Traits::eq_int_type(__ch, __eof)) { __err |= ios_base::eofbit; }
+      else if (_Traits::eq_int_type(__ch, __iDelim)) {
+        ++__total;
+        __is.rdbuf()->sbumpc();
+      } else { __err |= ios_base::badbit; }
+    } catch (...) {
+      __is.setstate(ios_base::badbit);
+    }
+  }
+  if (__total) { __err |= ios_base::failbit; }
+  if (__err) { __is.setstate(__err); }
+  return __is;
+}
+
+template <typename _CharT, typename _Traits, typename _Alloc>
+std::basic_istream<_CharT, _Traits>&
+getline(std::basic_istream<_CharT, _Traits>& __is,
+  MyTypes::MyBasicString<_CharT, _Traits, _Alloc>& __str) {
+  
+  return getline(__is, __str, __is.widen('\n'));
 }
 
 } // namespace std

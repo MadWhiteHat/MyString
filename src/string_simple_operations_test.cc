@@ -1031,12 +1031,18 @@ TYPED_TEST(SimpleOperationsTests, Output) {
   using value_type = typename TestFixture::value_type;
 
   const auto __ilist = TestFixture::_str1;
+  value_type __filler = *(__ilist.begin());
 
   const typename TestFixture::MyTestingString __str(__ilist);
   typename TestFixture::OStringStream __ostreamStr;
-
+  try {
+    auto __prev = __ostreamStr.fill(__filler);
+  } catch (...) {}
   const typename TestFixture::STLString __cmp(__ilist);
   typename TestFixture::OStringStream __ostreamCmp;
+  try {
+    auto __prev = __ostreamCmp.fill(__filler);
+  } catch(...) {}
   __ostreamCmp << std::right << std::uppercase << std::setw(__cmp.length() * 2)
     << __cmp;
   const auto __resCmp = __ostreamCmp.str();
@@ -1047,8 +1053,136 @@ TYPED_TEST(SimpleOperationsTests, Output) {
   auto __resStr = __ostreamStr.str();
 
   //Assert
-  std::wcout << __resStr.data() << std::endl;
-  std::wcout << __resCmp.data() << std::endl;
   EXPECT_STREQ_CUSTOM(__resStr.data(), __resStr.length(), __resCmp.data(),
     __resCmp.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, Input) {
+  //Arrange
+  using value_type = typename TestFixture::value_type;
+
+  const auto __ilist1 = TestFixture::_str1;
+  const auto __ilist2 = TestFixture::_str2;
+
+  typename TestFixture::STLString __init(__ilist1);
+  __init += value_type(' ');
+  __init += __ilist2;
+
+  typename TestFixture::MyTestingString __str;
+  typename TestFixture::IStringStream __istreamStr(__init);
+
+  typename TestFixture::STLString __cmp;
+  typename TestFixture::IStringStream __istreamCmp(__init);
+  __istreamCmp >> __cmp;
+
+  //Act
+  __istreamStr >> __str;
+
+  //Assert
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, GetLine) {
+  //Arrange
+  using value_type = typename TestFixture::value_type;
+
+  const auto __ilist1 = TestFixture::_str1;
+  const auto __ilist2 = TestFixture::_str2;
+
+  typename TestFixture::STLString __init(__ilist1);
+  const value_type __delimSpace = ' ';
+  const value_type __delimNL = '\n';
+  const value_type __delimTab = '\t';
+  __init += __delimSpace;
+  __init += __ilist2;
+  __init += __delimNL;
+  __init += __ilist1;
+  __init += __delimTab;
+  __init += __ilist2;
+
+
+  typename TestFixture::MyTestingString __str;
+  typename TestFixture::IStringStream __istreamStr(__init);
+
+  typename TestFixture::STLString __cmp;
+  typename TestFixture::IStringStream __istreamCmp(__init);
+  try {
+    std::getline(__istreamCmp, __cmp);
+  } catch (...) {}
+
+  //Act
+  try {
+    std::getline(__istreamStr, __str);
+  } catch (...) {}
+
+  //Assert
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, GetLineSpaceDelim) {
+  //Arrange
+  using value_type = typename TestFixture::value_type;
+
+  const auto __ilist1 = TestFixture::_str1;
+  const auto __ilist2 = TestFixture::_str2;
+
+  typename TestFixture::STLString __init(__ilist1);
+  const value_type __delimSpace = ' ';
+  const value_type __delimNL = '\n';
+  const value_type __delimTab = '\t';
+  __init += __delimSpace;
+  __init += __ilist2;
+  __init += __delimNL;
+  __init += __ilist1;
+  __init += __delimTab;
+  __init += __ilist2;
+
+  typename TestFixture::MyTestingString __str;
+  typename TestFixture::IStringStream __istreamStr(__init);
+
+  typename TestFixture::STLString __cmp;
+  typename TestFixture::IStringStream __istreamCmp(__init);
+  std::getline(__istreamCmp, __cmp, __delimSpace);
+
+  //Act
+  std::getline(__istreamStr, __str, __delimSpace);
+
+  //Assert
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
+}
+
+TYPED_TEST(SimpleOperationsTests, GetLineTabDelim) {
+  //Arrange
+  using value_type = typename TestFixture::value_type;
+
+  const auto __ilist1 = TestFixture::_str1;
+  const auto __ilist2 = TestFixture::_str2;
+
+  typename TestFixture::STLString __init(__ilist1);
+  const value_type __delimSpace = ' ';
+  const value_type __delimNL = '\n';
+  const value_type __delimTab = '\t';
+  __init += __delimSpace;
+  __init += __ilist2;
+  __init += __delimNL;
+  __init += __ilist1;
+  __init += __delimTab;
+  __init += __ilist2;
+
+  typename TestFixture::MyTestingString __str;
+  typename TestFixture::IStringStream __istreamStr(__init);
+
+  typename TestFixture::STLString __cmp;
+  typename TestFixture::IStringStream __istreamCmp(__init);
+  std::getline(__istreamCmp, __cmp, __delimTab);
+
+  //Act
+  std::getline(__istreamStr, __str, __delimTab);
+
+  //Assert
+  EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
+    __cmp.length());
 }
