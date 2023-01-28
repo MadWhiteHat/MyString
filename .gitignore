@@ -51,5 +51,5 @@ _deps
 
 ### Project Specific ###
 [Bb][Uu][Ii][Ll][Dd]/
-*.jsom
+*.json
 *.py
