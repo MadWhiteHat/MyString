@@ -49,5 +49,7 @@ _deps
 # External projects
 *-prefix/
 
-### Project ###
+### Project Specific ###
 [Bb][Uu][Ii][Ll][Dd]/
+*.jsom
+*.py
