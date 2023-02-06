@@ -3229,8 +3229,10 @@ operator>>(std::basic_istream<_CharT, _Traits>& __is,
       const int_type __eof = _Traits::eof();
       int_type __ch = __is.rdbuf()->sgetc();
 
-      while (__total < __count && !_Traits::eq_int_type(__ch, __eof)
+      while (__total < __count
+        && !_Traits::eq_int_type(__ch, __eof)
         && !__ct.is(ctype_base::space, _Traits::to_char_type(__ch))) {
+
         if (__len == INPUT_BUFFER_SIZE) {
           __str.append(__buff, INPUT_BUFFER_SIZE);
           __len = 0;
@@ -3309,7 +3311,8 @@ getline(std::basic_istream<_CharT, _Traits>& __is,
       const int_type __eof = _Traits::eof();
       int_type __ch = __is.rdbuf()->sgetc();
 
-      while (__total < __count && !_Traits::eq_int_type(__ch, __eof)
+      while (__total < __count
+        && !_Traits::eq_int_type(__ch, __eof)
         && !_Traits::eq_int_type(__ch, __iDelim)) {
 
         __str += _Traits::to_char_type(__ch);
@@ -3326,7 +3329,7 @@ getline(std::basic_istream<_CharT, _Traits>& __is,
       __is.setstate(ios_base::badbit);
     }
   }
-  if (__total) { __err |= ios_base::failbit; }
+  if (!__total) { __err |= ios_base::failbit; }
   if (__err) { __is.setstate(__err); }
   return __is;
 }

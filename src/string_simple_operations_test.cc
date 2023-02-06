@@ -1079,6 +1079,7 @@ TYPED_TEST(SimpleOperationsTests, Input) {
   __istreamStr >> __str;
 
   //Assert
+  EXPECT_EQ(__istreamStr.good(), __istreamCmp.good());
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
 }
@@ -1117,6 +1118,7 @@ TYPED_TEST(SimpleOperationsTests, GetLine) {
   } catch (...) {}
 
   //Assert
+  EXPECT_EQ(__istreamStr.good(), __istreamCmp.good());
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
 }
@@ -1150,6 +1152,7 @@ TYPED_TEST(SimpleOperationsTests, GetLineSpaceDelim) {
   std::getline(__istreamStr, __str, __delimSpace);
 
   //Assert
+  EXPECT_EQ(__istreamStr.good(), __istreamCmp.good());
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
 }
@@ -1183,6 +1186,7 @@ TYPED_TEST(SimpleOperationsTests, GetLineTabDelim) {
   std::getline(__istreamStr, __str, __delimTab);
 
   //Assert
+  EXPECT_EQ(__istreamStr.good(), __istreamCmp.good());
   EXPECT_STREQ_CUSTOM(__str.data(), __str.length(), __cmp.data(),
     __cmp.length());
 }

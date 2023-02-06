@@ -19,9 +19,9 @@ macro(fetch_git_submodules)
 
 endmacro() #fetch_git_submodules
 
-macro(check_git_submodule SUBMODULE EXTENAL_MODULES_DIR)
-  if(NOT EXISTS "${EXTENAL_MODULES_DIR}/${SUBMODULE}/CMakeLists.txt")
-    message(FATAL_ERROR "The googletest module was not downloaded or not
-    correctly setup for cmake!")
+macro(check_git_submodule SUBMODULE MODULES_DIR)
+  if(NOT EXISTS "${MODULES_DIR}/${SUBMODULE}/CMakeLists.txt")
+    message(FATAL_ERROR "The ${SUBMODULE} submodule was not downloaded or not"
+      " correctly setup for cmake!")
 endif() # Cheking module
 endmacro() # check_git_submodule
