@@ -47,6 +47,10 @@ class MyLogicError : public MyException {
   using MyException::MyException;
 };
 
+class MyBadArrayLength : public MyException {
+  using MyException::MyException;
+};
+
 template <typename _ExceptionType>
 void __ThrowMyExceptionFmt(const char* __fmt,...) {
   char buffer[SIZE] = {0};

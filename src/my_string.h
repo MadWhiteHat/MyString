@@ -40,6 +40,7 @@
 // 5. Your project's .h files.
 #include "my_iterator.h"
 #include "my_exception.h"
+#include "my_allocator.h"
 #include "custom_traits.h"
 #include "search_trie.h"
 
@@ -3256,6 +3257,17 @@ operator>>(std::basic_istream<_CharT, _Traits>& __is,
   if (__err) { __is.setstate(__err); }
   return __is;
 }
+
+namespace MyAlloc {
+template <typename _CharT, typename _Traits = std::char_traits<_CharT>>
+using MyBasicString = MyTypes::MyBasicString<
+                        _CharT, _Traits, MyTypes::MyAllocator<_CharT>>;
+
+using MyString = MyBasicString<char>;
+using MyWideString = MyBasicString<wchar_t>;
+using MyU16String = MyBasicString<char16_t>;
+using MyU32String = MyBasicString<char32_t>;
+} // namespace MyAlloc
 
 namespace PMR {
 template <typename _CharT, typename _Traits = std::char_traits<_CharT>>

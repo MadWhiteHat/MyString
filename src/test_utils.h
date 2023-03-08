@@ -44,7 +44,22 @@ using MyParamTypes = testing::Types<
   std::tuple<wchar_t>,
   std::tuple<char, std::char_traits<char>>,
   std::tuple<char, std::char_traits<char>,
-    std::pmr::polymorphic_allocator<char>>
+    std::pmr::polymorphic_allocator<char>>,
+  std::tuple<char, std::char_traits<char>, MyTypes::MyAllocator<char>>,
+  std::tuple<char16_t, std::char_traits<char16_t>,
+    MyTypes::MyAllocator<char16_t>>,
+  std::tuple<char32_t, std::char_traits<char32_t>,
+    MyTypes::MyAllocator<char32_t>>,
+  std::tuple<wchar_t, std::char_traits<wchar_t>, MyTypes::MyAllocator<wchar_t>>
+>;
+
+using MyUnicodeParamTypes = testing::Types<
+// For types defined in standards after C++17
+#if __cplusplus > 201703L
+#endif
+  std::tuple<wchar_t>,
+  std::tuple<wchar_t, std::char_traits<wchar_t>,
+    std::pmr::polymorphic_allocator<wchar_t>>
 >;
 
 enum Adjustment { LOCAL, DYNAMIC };
@@ -111,6 +126,15 @@ class StringTestingBase : public ::testing::Test {
     std::conditional_t<std::is_same_v<_Alloc, void>,
       std::basic_ostringstream<_CharT, _Traits>,
       std::basic_ostringstream<_CharT, _Traits, _Alloc>
+    >
+  >;
+
+  using StringStream = std::conditional_t<
+    std::is_same_v<_Traits, void>,
+    std::basic_stringstream<_CharT>,
+    std::conditional_t<std::is_same_v<_Alloc, void>,
+      std::basic_stringstream<_CharT, _Traits>,
+      std::basic_stringstream<_CharT, _Traits, _Alloc>
     >
   >;
 
